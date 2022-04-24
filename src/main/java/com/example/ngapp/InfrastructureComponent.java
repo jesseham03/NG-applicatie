@@ -1,25 +1,38 @@
 package com.example.ngapp;
 
 public class InfrastructureComponent {
+
+    enum Type {
+        Web,
+        Database,
+        Firewall
+    }
+
     private String componentName;
     private float costInEuros;
-    private float availabilityPercentage;
+    private float availability;
+    private Type type;
 
     public float getCostInEuros() {
         return costInEuros;
     }
 
     public float getAvailabilityPercentage() {
-        return availabilityPercentage;
+        return availability;
     }
 
     public String getComponentName() {
         return componentName;
     }
 
-    public InfrastructureComponent(String componentName, float costInEuros, float availabilityPercentage){
+    public Type getType() {
+        return type;
+    }
+
+    public InfrastructureComponent(String componentName, float costInEuros, float availability, Type type) {
         this.componentName = componentName;
         this.costInEuros = costInEuros;
-        this.availabilityPercentage = availabilityPercentage;
+        this.availability = availability;
+        this.type = type;
     }
 }
