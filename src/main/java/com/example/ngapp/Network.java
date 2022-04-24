@@ -15,6 +15,20 @@ public class Network {
         }
     }
 
+    public float calculatePrice(){
+        float price = 0;
+        for (InfrastructureComponent component : webServerComponents) {
+            price += component.getCostInEuros();
+        }
+        for (InfrastructureComponent component : databaseServerComponents) {
+            price += component.getCostInEuros();
+        }
+        for (InfrastructureComponent component : firewallComponents) {
+            price += component.getCostInEuros();
+        }
+        return price;
+    }
+
     public float calculateAvailability(){
         if (webServerComponents.isEmpty() || databaseServerComponents.isEmpty() || firewallComponents.isEmpty()) {
             return 0;
@@ -69,5 +83,6 @@ public class Network {
         network1.addComponent(database7);
         network1.addComponent(fireWall1);
         System.out.println(network1.calculateAvailability());
+        System.out.println(network1.calculatePrice());
     }
 }
