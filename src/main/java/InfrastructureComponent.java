@@ -1,4 +1,6 @@
-public class InfrastructureComponent {
+import java.io.Serializable;
+//Implements serializable is necessary to write this to a file
+public class InfrastructureComponent implements Serializable {
 
 
     enum Type {

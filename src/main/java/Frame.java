@@ -167,6 +167,15 @@ public class Frame extends JFrame implements ActionListener {
     private void OpenFile() {
         //from https://stackoverflow.com/questions/40255039/how-to-choose-file-in-java
         JFileChooser chooser = new JFileChooser();
+
+        //Set default open location
+        File saveDirectory = new File(
+                System.getProperty("user.home") + System.getProperty("file.separator")+ "Documents" +
+                        System.getProperty("file.separator")+"NerdygadgetsFiles");
+        //If the directory does not exist, make it
+        boolean result = saveDirectory.mkdir();
+        chooser.setCurrentDirectory(saveDirectory);
+
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Text file", "txt");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(null);
@@ -193,7 +202,7 @@ public class Frame extends JFrame implements ActionListener {
         boolean result = saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
 
-        //Write to a txt file
+        //region Save as txt
         int option = fileChooser.showSaveDialog(this);
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
@@ -210,6 +219,27 @@ public class Frame extends JFrame implements ActionListener {
                 e.printStackTrace();
             }
         }
+        //endregion
+
+        //region Save as class
+//        int option = fileChooser.showSaveDialog(this);
+//        if (option == JFileChooser.APPROVE_OPTION) {
+//            File file = fileChooser.getSelectedFile();
+//            if (file == null) {
+//                return;
+//            }
+//            try {
+//                FileOutputStream fileOut = new FileOutputStream(saveDirectory + "testa.asd");
+//                ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//                objectOut.writeObject(network);
+//                objectOut.close();
+//                System.out.println("The Object  was succesfully written to a file");
+//
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        }
+        //endregion
     }
 
     public static class FrameDragListener extends MouseAdapter {

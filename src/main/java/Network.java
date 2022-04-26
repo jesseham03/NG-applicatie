@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Network {
+public class Network implements Serializable {
 
     private ArrayList<InfrastructureComponent> webServerComponents = new ArrayList<>();
     private ArrayList<InfrastructureComponent> databaseServerComponents = new ArrayList<>();
