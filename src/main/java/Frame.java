@@ -28,11 +28,11 @@ public class Frame extends JFrame implements ActionListener {
     private final JMenuItem quitButton;
 
     private final JComboBox<InfrastructureComponent.Type> typeComboBox;
-    //endregion
 
 //    private DragDropPanel visualNetwork;
 
-    private JPanel netWorkDrawing;
+    private final JPanel netWorkDrawing;
+    //endregion
 
     public Frame() {
         try {
@@ -153,7 +153,20 @@ public class Frame extends JFrame implements ActionListener {
             float price = Float.parseFloat(priceField.getText());
             float availability = Float.parseFloat(availabilityField.getText());
             InfrastructureComponent.Type selectedType = (InfrastructureComponent.Type) typeComboBox.getSelectedItem();
-            network.addComponent(new InfrastructureComponent(nameField.getText(), price, availability, selectedType));
+            InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType);
+            network.addComponent(addedComponent);
+
+            DraggableImageComponent visualComponent = new DraggableImageComponent(addedComponent);
+            netWorkDrawing.add(visualComponent);
+            visualComponent.setOverbearing(true);
+            visualComponent.setBorder(new LineBorder(Color.black, 1));
+
+            int delta = 50;
+            int centerX = netWorkDrawing.getWidth() / 2;
+            int centerY = netWorkDrawing.getHeight() / 2;
+            visualComponent.setSize(delta, delta);
+            visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
+            netWorkDrawing.repaint();
         } catch (NumberFormatException ex) {
             return;
         }
@@ -161,27 +174,8 @@ public class Frame extends JFrame implements ActionListener {
         totalPriceLabelValue.setText(calculatedPrice);
         String calculatedAvailability = String.valueOf(network.calculateAvailability());
         totalAvailabilityLabelValue.setText(calculatedAvailability);
-
-        DraggableImageComponent visualComponent = new DraggableImageComponent();
-        netWorkDrawing.add(visualComponent);
-        visualComponent.setAutoSize(true);
-        visualComponent.setOverbearing(true);
-        visualComponent.setBorder(new LineBorder(Color.black, 1));
-
-        int delta = 50;
-        int centerX = netWorkDrawing.getWidth() / 2;
-        int centerY = netWorkDrawing.getHeight() / 2;
-        visualComponent.setSize(delta, delta);
-        visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
-        netWorkDrawing.repaint();
-
         //For text appearance
 //        componentList.setText(network.toString());
-    }
-
-    public static int getRandom(int range) {
-        int r = (int) (Math.random() * range) - range;
-        return r;
     }
 
     private void OpenFile() {

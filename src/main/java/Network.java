@@ -3,9 +3,9 @@ import java.util.ArrayList;
 
 public class Network implements Serializable {
 
-    private ArrayList<InfrastructureComponent> webServerComponents = new ArrayList<>();
-    private ArrayList<InfrastructureComponent> databaseServerComponents = new ArrayList<>();
-    private ArrayList<InfrastructureComponent> firewallComponents = new ArrayList<>();
+    private final ArrayList<InfrastructureComponent> webServerComponents = new ArrayList<>();
+    private final ArrayList<InfrastructureComponent> databaseServerComponents = new ArrayList<>();
+    private final ArrayList<InfrastructureComponent> firewallComponents = new ArrayList<>();
 
     //region Getters
     public ArrayList<InfrastructureComponent> getAllComponentsCopy() {
@@ -95,6 +95,4 @@ public class Network implements Serializable {
 
         return firewallAvailability * dataBaseAvailability * webServerAvailability;
     }
-
-
 }

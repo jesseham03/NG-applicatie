@@ -1,3 +1,4 @@
+//Is niet meer nodig, maar heb ik laten staan, mochten we het later (een onderdeel van) kunnen gebruiken
 //import javax.swing.*;
 //import java.awt.*;
 //

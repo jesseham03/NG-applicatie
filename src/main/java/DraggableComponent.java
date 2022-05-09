@@ -1,4 +1,3 @@
-
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -54,10 +53,6 @@ public class DraggableComponent extends JComponent {
                 }
             }
         });
-    }
-
-    public boolean isOverbearing() {
-        return overbearing;
     }
 
     public void setOverbearing(boolean overbearing) {
