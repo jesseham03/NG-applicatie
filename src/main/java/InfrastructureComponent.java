@@ -1,8 +1,8 @@
 import javax.swing.*;
 import java.io.Serializable;
-//Implements serializable is necessary to write this to a file
-public class InfrastructureComponent extends JComponent implements Serializable{
 
+//Implements serializable is necessary to write this to a file
+public class InfrastructureComponent extends JComponent implements Serializable {
 
     enum Type {
         Web,

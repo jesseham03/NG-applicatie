@@ -36,7 +36,7 @@ public class Network implements Serializable {
             case Firewall -> firewallComponents.add(component);
         }
     }
-
+    
     @Override
     public String toString() {
         StringBuilder infoString = new StringBuilder("All servers:\n");

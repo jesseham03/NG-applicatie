@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
@@ -9,7 +8,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class Frame extends JFrame implements ActionListener {
-
     private final Network network = new Network();
 
     //region JUIcomponents
@@ -38,9 +36,7 @@ public class Frame extends JFrame implements ActionListener {
         try {
 //            setUndecorated(true);
             com.formdev.flatlaf.FlatDarculaLaf.setup();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -136,14 +132,11 @@ public class Frame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addNewComponentButton) {
             CreateComponent();
-        }
-        else if (e.getSource() == quitButton) {
+        } else if (e.getSource() == quitButton) {
             System.exit(0);
-        }
-        else if (e.getSource() == openFileButton) {
+        } else if (e.getSource() == openFileButton) {
             OpenFile();
-        }
-        else if (e.getSource() == saveFileButton) {
+        } else if (e.getSource() == saveFileButton) {
             saveToFile();
         }
     }
@@ -183,8 +176,8 @@ public class Frame extends JFrame implements ActionListener {
 
         //Set default open location
         File saveDirectory = new File(
-                System.getProperty("user.home") + System.getProperty("file.separator")+ "Documents" +
-                        System.getProperty("file.separator")+"NerdygadgetsFiles");
+                System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" +
+                        System.getProperty("file.separator") + "NerdygadgetsFiles");
         //If the directory does not exist, make it
         boolean result = saveDirectory.mkdir();
         chooser.setCurrentDirectory(saveDirectory);
@@ -192,7 +185,7 @@ public class Frame extends JFrame implements ActionListener {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Text file", "txt");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(null);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
             File file = chooser.getSelectedFile();
             //from http://www.java2s.com/Tutorials/Java/Swing_How_to/JFileChooser/Display_the_Contents_of_a_text_file_in_a_JTextArea.htm
@@ -209,8 +202,8 @@ public class Frame extends JFrame implements ActionListener {
         //Set the default save directory
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
         File saveDirectory = new File(
-                System.getProperty("user.home") + System.getProperty("file.separator")+ "Documents" +
-                        System.getProperty("file.separator")+"NerdygadgetsFiles");
+                System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" +
+                        System.getProperty("file.separator") + "NerdygadgetsFiles");
         //If the directory does not exist, make it
         saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
