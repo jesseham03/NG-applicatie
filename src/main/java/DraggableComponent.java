@@ -14,17 +14,6 @@ public class DraggableComponent extends JComponent {
 
     public DraggableComponent() {
         addDragListeners();
-        setOpaque(true);
-        setBackground(new Color(240,240,240));
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (isOpaque()) {
-            g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
     }
 
     private void addDragListeners() {

@@ -24,9 +24,9 @@ public class InfrastructureComponent extends JComponent implements Serializable{
         return availability;
     }
 
-//    public String getComponentName() {
-//        return componentName;
-//    }
+    public String getComponentName() {
+        return componentName;
+    }
 
     public Type getType() {
         return type;

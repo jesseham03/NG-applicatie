@@ -159,12 +159,11 @@ public class Frame extends JFrame implements ActionListener {
             DraggableImageComponent visualComponent = new DraggableImageComponent(addedComponent);
             netWorkDrawing.add(visualComponent);
             visualComponent.setOverbearing(true);
-            visualComponent.setBorder(new LineBorder(Color.black, 1));
 
-            int delta = 50;
+            int size = 50;
             int centerX = netWorkDrawing.getWidth() / 2;
             int centerY = netWorkDrawing.getHeight() / 2;
-            visualComponent.setSize(delta, delta);
+            visualComponent.setSize(size, size);
             visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
             netWorkDrawing.repaint();
         } catch (NumberFormatException ex) {
