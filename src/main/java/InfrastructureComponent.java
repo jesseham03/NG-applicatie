@@ -1,6 +1,10 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.Serializable;
 //Implements serializable is necessary to write this to a file
-public class InfrastructureComponent implements Serializable {
+public class InfrastructureComponent extends JComponent implements Serializable{
 
 
     enum Type {
@@ -15,11 +19,11 @@ public class InfrastructureComponent implements Serializable {
     private Type type;
 
     //For the drag and drop system
-    private Vector2 position = new Vector2();
+//    private Vector2 position = new Vector2();
 
-    public void setPosition(Vector2 position) {
-        this.position = position;
-    }
+//    public void setPosition(Vector2 position) {
+//        this.position = position;
+//    }
 
     //region Getters
     public float getCostInEuros() {
@@ -34,9 +38,9 @@ public class InfrastructureComponent implements Serializable {
         return componentName;
     }
 
-    public Vector2 getPosition() {
-        return position;
-    }
+//    public Vector2 getPosition() {
+//        return position;
+//    }
 
     public Type getType() {
         return type;

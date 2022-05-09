@@ -1,38 +1,38 @@
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class Frame extends JFrame implements ActionListener {
 
-    private Network network = new Network();
+    private final Network network = new Network();
 
     //region JUIcomponents
-    private JButton addNewComponentButton;
-    private JTextField nameField;
-    private JTextField priceField;
-    private JTextField availabilityField;
+    private final JButton addNewComponentButton;
+    private final JTextField nameField;
+    private final JTextField priceField;
+    private final JTextField availabilityField;
 
-    private JLabel totalPriceLabelValue;
-    private JLabel totalAvailabilityLabelValue;
+    private final JLabel totalPriceLabelValue;
+    private final JLabel totalAvailabilityLabelValue;
 
     private JTextArea componentList;
 
-    private JMenuItem openFileButton;
-    private JMenuItem saveFileButton;
-    private JMenuItem quitButton;
+    private final JMenuItem openFileButton;
+    private final JMenuItem saveFileButton;
+    private final JMenuItem quitButton;
 
-
-    private JComboBox<InfrastructureComponent.Type> typeComboBox;
+    private final JComboBox<InfrastructureComponent.Type> typeComboBox;
     //endregion
 
-    private DragDropPanel visualNetwork;
+//    private DragDropPanel visualNetwork;
+
+    private JPanel netWorkDrawing;
 
     public Frame() {
         try {
@@ -106,19 +106,23 @@ public class Frame extends JFrame implements ActionListener {
         bottomPanel.add(newComponentPanel);
         //endregion
 
+        netWorkDrawing = new JPanel();
+        netWorkDrawing.setLayout(null);
+
         //For visual appearance
 //        visualNetwork = new DragDropPanel(network);
 
         //For text appearance
-        componentList = new JTextArea();
-        componentList.setEditable(false);
+//        componentList = new JTextArea();
+//        componentList.setEditable(false);
 
+        getContentPane().add(BorderLayout.CENTER, netWorkDrawing);
         getContentPane().add(BorderLayout.SOUTH, bottomPanel);
         getContentPane().add(BorderLayout.NORTH, menuBar);
         //For visual appearance
 //        getContentPane().add(BorderLayout.CENTER, visualNetwork);
         //For text appearance
-        getContentPane().add(BorderLayout.CENTER, componentList);
+//        getContentPane().add(BorderLayout.CENTER, componentList);
 
 //        FrameDragListener frameDragListener = new FrameDragListener(this);
 //        addMouseListener(frameDragListener);
@@ -158,10 +162,26 @@ public class Frame extends JFrame implements ActionListener {
         String calculatedAvailability = String.valueOf(network.calculateAvailability());
         totalAvailabilityLabelValue.setText(calculatedAvailability);
 
+        DraggableImageComponent visualComponent = new DraggableImageComponent();
+        netWorkDrawing.add(visualComponent);
+        visualComponent.setAutoSize(true);
+        visualComponent.setOverbearing(true);
+        visualComponent.setBorder(new LineBorder(Color.black, 1));
+
+        int delta = 50;
+        int centerX = netWorkDrawing.getWidth() / 2;
+        int centerY = netWorkDrawing.getHeight() / 2;
+        visualComponent.setSize(delta, delta);
+        visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
+        netWorkDrawing.repaint();
+
         //For text appearance
-        componentList.setText(network.toString());
-        //For visual appearance
-//            repaint();
+//        componentList.setText(network.toString());
+    }
+
+    public static int getRandom(int range) {
+        int r = (int) (Math.random() * range) - range;
+        return r;
     }
 
     private void OpenFile() {
@@ -199,7 +219,7 @@ public class Frame extends JFrame implements ActionListener {
                 System.getProperty("user.home") + System.getProperty("file.separator")+ "Documents" +
                         System.getProperty("file.separator")+"NerdygadgetsFiles");
         //If the directory does not exist, make it
-        boolean result = saveDirectory.mkdir();
+        saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
 
         //region Save as txt
@@ -242,27 +262,27 @@ public class Frame extends JFrame implements ActionListener {
         //endregion
     }
 
-    public static class FrameDragListener extends MouseAdapter {
-        //From https://stackoverflow.com/questions/16046824/making-a-java-swing-frame-movable-and-setundecorated
-
-        private final JFrame frame;
-        private Point mouseDownCompCoords = null;
-
-        public FrameDragListener(JFrame frame) {
-            this.frame = frame;
-        }
-
-        public void mouseReleased(MouseEvent e) {
-            mouseDownCompCoords = null;
-        }
-
-        public void mousePressed(MouseEvent e) {
-            mouseDownCompCoords = e.getPoint();
-        }
-
-        public void mouseDragged(MouseEvent e) {
-            Point currCoords = e.getLocationOnScreen();
-            frame.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
-        }
-    }
+    //    public static class FrameDragListener extends MouseAdapter {
+//        //From https://stackoverflow.com/questions/16046824/making-a-java-swing-frame-movable-and-setundecorated
+//
+//        private final JFrame frame;
+//        private Point mouseDownCompCoords = null;
+//
+//        public FrameDragListener(JFrame frame) {
+//            this.frame = frame;
+//        }
+//
+//        public void mouseReleased(MouseEvent e) {
+//            mouseDownCompCoords = null;
+//        }
+//
+//        public void mousePressed(MouseEvent e) {
+//            mouseDownCompCoords = e.getPoint();
+//        }
+//
+//        public void mouseDragged(MouseEvent e) {
+//            Point currCoords = e.getLocationOnScreen();
+//            frame.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
+//        }
+//    }
 }
