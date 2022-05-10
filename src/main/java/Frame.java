@@ -1,11 +1,17 @@
+import com.google.gson.JsonObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 public class Frame extends JFrame implements ActionListener {
     private final Network network = new Network();
@@ -182,19 +188,29 @@ public class Frame extends JFrame implements ActionListener {
         boolean result = saveDirectory.mkdir();
         chooser.setCurrentDirectory(saveDirectory);
 
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text file", "txt");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON file", "json");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
-            File file = chooser.getSelectedFile();
-            //from http://www.java2s.com/Tutorials/Java/Swing_How_to/JFileChooser/Display_the_Contents_of_a_text_file_in_a_JTextArea.htm
-            try {
-                BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-                componentList.read(input, "READING FILE...");
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
+        File file = chooser.getSelectedFile();
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader(file));
+            JSONObject jsonObject = (JSONObject) obj;
+            String name = (String) jsonObject.get("Name");
+            String course = (String) jsonObject.get("Course");
+            JSONArray subjects = (JSONArray) jsonObject.get("Subjects");
+            System.out.println("Name: " + name);
+            System.out.println("Course: " + course);
+            System.out.println("Subjects:");
+            for (Object subject : subjects) {
+                System.out.println(subject);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -208,23 +224,58 @@ public class Frame extends JFrame implements ActionListener {
         saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
 
-        //region Save as txt
+        //Save as Json test
         int option = fileChooser.showSaveDialog(this);
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file == null) {
                 return;
             }
-            if (!file.getName().toLowerCase().endsWith(".txt")) {
-                file = new File(file.getParentFile(), file.getName() + ".txt");
+            if (!file.getName().toLowerCase().endsWith(".json")) {
+                file = new File(file.getParentFile(), file.getName() + ".json");
             }
             try {
-                componentList.write(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+                JsonObject jsonObject = new JsonObject();
+
+                jsonObject.addProperty("metric", "mihirmonani");
+                jsonObject.addProperty("timestamp", 1346846400);
+                jsonObject.addProperty("value", 14);
+
+                JsonObject jObject = new JsonObject();
+
+                jObject.addProperty("host", "splunk");
+                jObject.addProperty("host1", "splunk1");
+
+                jsonObject.add("tags", jObject);
+
+                System.out.println(jsonObject);
+
+                FileWriter myWriter = new FileWriter(file);
+                myWriter.write(String.valueOf(jsonObject));
+                myWriter.close();
                 Desktop.getDesktop().open(file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        //region Save as txt
+//        int option = fileChooser.showSaveDialog(this);
+//        if (option == JFileChooser.APPROVE_OPTION) {
+//            File file = fileChooser.getSelectedFile();
+//            if (file == null) {
+//                return;
+//            }
+//            if (!file.getName().toLowerCase().endsWith(".txt")) {
+//                file = new File(file.getParentFile(), file.getName() + ".txt");
+//            }
+//            try {
+//                componentList.write(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+//                Desktop.getDesktop().open(file);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         //endregion
 
         //region Save as class

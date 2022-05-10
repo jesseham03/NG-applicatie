@@ -36,23 +36,21 @@ public class Network implements Serializable {
             case Firewall -> firewallComponents.add(component);
         }
     }
-    
+
     @Override
     public String toString() {
-        StringBuilder infoString = new StringBuilder("All servers:\n");
-        infoString.append("────────────────────────────────────────\n");
-        for (InfrastructureComponent component : webServerComponents) {
-            infoString.append("- ").append(component).append("\n");
-        }
-        infoString.append("────────────────────────────────────────\n");
-        for (InfrastructureComponent component : databaseServerComponents) {
-            infoString.append("- ").append(component).append("\n");
-        }
-        infoString.append("────────────────────────────────────────\n");
-        for (InfrastructureComponent component : firewallComponents) {
-            infoString.append("- ").append(component).append("\n");
-        }
-        return infoString.toString();
+//        String infoString = "";
+        return "\"MobilePhone [MobileBrand " + "brand" + ", MobileName = " + "name" + ", RAM = " + "ram" + ", ROM = " + "rom" + "]";
+//        for (InfrastructureComponent component : webServerComponents) {
+//            infoString += ("\"Webserver [Name " + component.getComponentName() + ", Price = " + component.getCostInEuros() + ", Availavility = " + component.getAvailabilityPercentage() + "]");
+//        }
+//        for (InfrastructureComponent component : databaseServerComponents) {
+//            infoString += ("\"DatabaseServer [Name " + component.getComponentName() + ", Price = " + component.getCostInEuros() + ", Availavility = " + component.getAvailabilityPercentage() + "]");
+//        }
+//        for (InfrastructureComponent component : firewallComponents) {
+//            infoString += ("\"Firewall [Name " + component.getComponentName() + ", Price = " + component.getCostInEuros() + ", Availavility = " + component.getAvailabilityPercentage() + "]");
+//        }
+//        return infoString;
     }
 
     public float calculatePrice() {
