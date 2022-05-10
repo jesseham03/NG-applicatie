@@ -26,9 +26,10 @@ public class Frame extends JFrame implements ActionListener {
 
     private final JMenuItem openMonitoringButton;
 
-    private final JMenu monitoringButton;
+    private final JMenuItem openOptimisationButton;
 
-    private final JMenu optimisationButton;
+    private final JMenu openButton;
+
 
     private final JMenuItem openFileButton;
     private final JMenuItem saveFileButton;
@@ -40,6 +41,9 @@ public class Frame extends JFrame implements ActionListener {
 
     private final JPanel netWorkDrawing;
     private final JPanel bottomPanel;
+    private  JPanel monitoring;
+
+    private JPanel optimisation;
     //endregion
 
     public Frame() {
@@ -57,24 +61,24 @@ public class Frame extends JFrame implements ActionListener {
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
         JMenu m1 = new JMenu("Start");
-        monitoringButton = new JMenu("Monitoring");
-        optimisationButton= new JMenu("Optimisation");
+        openButton = new JMenu("Open");
         menuBar.add(m1);
-        menuBar.add(monitoringButton);
-        menuBar.add(optimisationButton);
-        openMonitoringButton = new JMenuItem("Open");
+        menuBar.add(openButton);
+        openOptimisationButton = new JMenuItem("Optimisation");
+        openMonitoringButton = new JMenuItem("Monitoring");
         openFileButton = new JMenuItem("Open");
         saveFileButton = new JMenuItem("Save as");
         quitButton = new JMenuItem("Quit");
+        openOptimisationButton.addActionListener(this);
         openMonitoringButton.addActionListener(this);
         openFileButton.addActionListener(this);
         saveFileButton.addActionListener(this);
         quitButton.addActionListener(this);
-        optimisationButton.addActionListener(this);
         m1.add(openFileButton);
         m1.add(saveFileButton);
         m1.add(quitButton);
-        monitoringButton.add(openMonitoringButton);
+        openButton.add(openMonitoringButton);
+        openButton.add(openOptimisationButton);
 
         //endregion
 
@@ -147,7 +151,6 @@ public class Frame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("0");
         if (e.getSource() == addNewComponentButton) {
             CreateComponent();
         } else if (e.getSource() == quitButton) {
@@ -157,20 +160,17 @@ public class Frame extends JFrame implements ActionListener {
         } else if (e.getSource() == saveFileButton) {
             saveToFile();
         } else if(e.getSource() == openMonitoringButton){
-            System.out.println("1");
             OpenMonitoring();
-        } else if(e.getSource() == optimisationButton) {
-
+        } else if(e.getSource() == openOptimisationButton) {
             OpenOptimisation();
         }
     }
 
 
     private void OpenMonitoring(){
-        System.out.println("2");
         try{
-            JPanel Monitoring = new JPanel();
-            Monitoring.setLayout(new GridLayout(1,2));
+            monitoring = new JPanel();
+            monitoring.setLayout(new GridLayout(1,2));
 
             JPanel MonitoringInfo = new JPanel();
             MonitoringInfo.setLayout(new GridLayout(6,1));
@@ -193,35 +193,42 @@ public class Frame extends JFrame implements ActionListener {
 
 
             JPanel MonitoringBar = new JPanel();
-            MonitoringBar.setPreferredSize(new Dimension(200,450));
-            MonitoringBar.setLayout(new GridLayout(3,1));
-            JScrollPane sp = new JScrollPane();
-            sp.setViewportView(MonitoringBar);
-            sp.getVerticalScrollBar().setUnitIncrement(50);
-//            MonitoringBar.add(sp);
+           MonitoringBar.setLayout(new GridLayout(7,1));
 
-//            MonitoringBar.add(new MonitoringScroll(Color.magenta));
-//            MonitoringBar.add(new MonitoringScroll(Color.cyan));
-//            MonitoringBar.add(new MonitoringScroll(Color.blue));
+            MonitoringBar.add(new MonitoringScroll(Color.magenta));
+            MonitoringBar.add(new MonitoringScroll(Color.cyan));
+            MonitoringBar.add(new MonitoringScroll(Color.blue));
+            MonitoringBar.add(new MonitoringScroll(Color.green));
+            MonitoringBar.add(new MonitoringScroll(Color.yellow));
+            MonitoringBar.add(new MonitoringScroll(Color.orange));
+            MonitoringBar.add(new MonitoringScroll(Color.red));
+            JScrollPane sp = new JScrollPane();
+//           sp.setViewportView(MonitoringBar);
+           // sp.createVerticalScrollBar().setUnitIncrement(50);
+           sp.getVerticalScrollBar().setUnitIncrement(50);
+
+           MonitoringBar.add(sp);
+
+
 
 
             setVisible(true);
 
 
-            Monitoring.add(MonitoringBar);
-            Monitoring.add(MonitoringInfo);
+            monitoring.add(MonitoringBar);
+            monitoring.add(MonitoringInfo);
 
 
 
 
-            getContentPane().add(BorderLayout.CENTER, Monitoring);
+            getContentPane().add( monitoring);
 
 
 
 
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
-
+            optimisation.setVisible(false);
 
 
 
@@ -230,7 +237,6 @@ public class Frame extends JFrame implements ActionListener {
             setVisible(true);
 
         } catch(Exception e){
-            System.out.println("happetee");
             return;
         }
     }
@@ -238,9 +244,15 @@ public class Frame extends JFrame implements ActionListener {
 
     private void OpenOptimisation(){
         try{
-            JPanel Optimisation = new JPanel();
+            optimisation = new JPanel();
 
             setVisible(true );
+
+            bottomPanel.setVisible(false);
+            netWorkDrawing.setVisible(false);
+            monitoring.setVisible(false);
+
+
         } catch(Exception e){
             return;
         }
