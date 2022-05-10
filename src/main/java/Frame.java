@@ -46,10 +46,12 @@ public class Frame extends JFrame implements ActionListener {
 
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
-        JMenu m1 = new JMenu("File");
-        JMenu m2 = new JMenu("Help");
+        JMenu m1 = new JMenu("Start");
+        JMenu m2 = new JMenu("Monitoring");
+        JMenu m3 = new JMenu("Optimisation");
         menuBar.add(m1);
         menuBar.add(m2);
+        menuBar.add(m3);
         openFileButton = new JMenuItem("Open");
         saveFileButton = new JMenuItem("Save as");
         quitButton = new JMenuItem("Quit");
