@@ -16,6 +16,7 @@ public class Frame extends JFrame implements ActionListener {
 
     //region JUIcomponents
     private final JButton addNewComponentButton;
+
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
@@ -26,15 +27,13 @@ public class Frame extends JFrame implements ActionListener {
     private JTextArea componentList;
 
     private final JMenuItem openMonitoringButton;
-
     private final JMenuItem openOptimisationButton;
-
-    private final JMenu openButton;
-
-
+    private final JMenuItem openHomeButton;
     private final JMenuItem openFileButton;
     private final JMenuItem saveFileButton;
     private final JMenuItem quitButton;
+
+    private final JMenu openButton;
 
     private final JComboBox<InfrastructureComponent.Type> typeComboBox;
 
@@ -43,7 +42,6 @@ public class Frame extends JFrame implements ActionListener {
     private final JPanel netWorkDrawing;
     private final JPanel bottomPanel;
     private  JPanel monitoring;
-
     private JPanel optimisation;
 
     private JScrollPane scrollpane;
@@ -69,9 +67,11 @@ public class Frame extends JFrame implements ActionListener {
         menuBar.add(openButton);
         openOptimisationButton = new JMenuItem("Optimisation");
         openMonitoringButton = new JMenuItem("Monitoring");
+        openHomeButton = new JMenuItem("Home");
         openFileButton = new JMenuItem("Open");
         saveFileButton = new JMenuItem("Save as");
         quitButton = new JMenuItem("Quit");
+        openHomeButton.addActionListener(this);
         openOptimisationButton.addActionListener(this);
         openMonitoringButton.addActionListener(this);
         openFileButton.addActionListener(this);
@@ -80,6 +80,7 @@ public class Frame extends JFrame implements ActionListener {
         m1.add(openFileButton);
         m1.add(saveFileButton);
         m1.add(quitButton);
+        openButton.add(openHomeButton);
         openButton.add(openMonitoringButton);
         openButton.add(openOptimisationButton);
 
@@ -166,6 +167,8 @@ public class Frame extends JFrame implements ActionListener {
             OpenMonitoring();
         } else if(e.getSource() == openOptimisationButton) {
             OpenOptimisation();
+        } else if(e.getSource() == openHomeButton){
+            OpenHome();
         }
     }
 
@@ -183,7 +186,6 @@ public class Frame extends JFrame implements ActionListener {
             JLabel InfoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
             JLabel InfoProcessing = new JLabel("Processing Power Used: " + MonitoringScroll.getProcessing());
             JLabel InfoDisk = new JLabel("Disk Usage: "+  MonitoringScroll.getDiskUsage());
-
             MonitoringInfo.add(InfoName);
             MonitoringInfo.add(InfoAvailability);
             MonitoringInfo.add(InfoTimeAvailabality);
@@ -201,22 +203,33 @@ public class Frame extends JFrame implements ActionListener {
                     "PHP language", "JAVASCRIPT",
                     "C Sharp" };
 
+            String[] command =
+                    {
+                            "cmd",
+                    };
+            Process p = Runtime.getRuntime().exec(command);
+            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
+            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
+            PrintWriter stdin = new PrintWriter(p.getOutputStream());
+            stdin.println("dir c:\\ /A /Q");
+            // write any other commands you want here
+            stdin.close();
+            int returnCode = p.waitFor();
+            System.out.println("Return code = " + returnCode);
+
+
             JList list = new JList(categories);
             scrollpane = new JScrollPane(list);
-            
+
 
             setVisible(true);
-
             monitoring.add(MonitoringBar);
             monitoring.add(MonitoringInfo);
-
             getContentPane().add(scrollpane, BorderLayout.WEST);
             getContentPane().add(monitoring, BorderLayout.CENTER);
-
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             optimisation.setVisible(false);
-
             setVisible(true);
 
         } catch(Exception e){
@@ -233,12 +246,27 @@ public class Frame extends JFrame implements ActionListener {
 
             setVisible(true );
 
+            scrollpane.setVisible(false);
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             monitoring.setVisible(false);
 
 
         } catch(Exception e){
+            return;
+        }
+    }
+
+
+
+    private void OpenHome(){
+        try{
+            bottomPanel.setVisible(true);
+            netWorkDrawing.setVisible(true);
+            monitoring.setVisible(false);
+            optimisation.setVisible(false);
+
+        }catch(Exception e){
             return;
         }
     }

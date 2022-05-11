@@ -27,6 +27,8 @@ public class MonitoringScroll extends JPanel {
 
 
 
+
+
     public static String getComponentName() {
         return componentName;
     }
