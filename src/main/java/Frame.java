@@ -204,12 +204,12 @@ public class Frame extends JFrame implements ActionListener {
             MonitoringInfo.add(RefreshButton);
             RefreshButton.addActionListener(this);
 
-            RefreshButton.setFont(new Font("Robota", Font.PLAIN, 50));
-            InfoName.setFont(new Font("Robota", Font.PLAIN, 50));
-            InfoAvailability.setFont(new Font("Robota", Font.PLAIN, 50));
-            InfoDisk.setFont(new Font("Robota", Font.PLAIN, 50));
-            InfoProcessing.setFont(new Font("Robota", Font.PLAIN, 50));
-            InfoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 50));
+            RefreshButton.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoName.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoAvailability.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoDisk.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoProcessing.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 30));
 
 
             String categories[] = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall" };
