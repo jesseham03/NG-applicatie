@@ -7,7 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
@@ -45,6 +48,9 @@ public class Frame extends JFrame implements ActionListener {
     private JPanel optimisation;
 
     private JScrollPane scrollpane;
+
+    public static Map<String, ImageIcon> imageMap = null;
+
     //endregion
 
     public Frame() {
@@ -58,7 +64,7 @@ public class Frame extends JFrame implements ActionListener {
         setTitle("NG Network-Application");
         setSize(650, 450);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUIFont (new javax.swing.plaf.FontUIResource("Roboto",Font.PLAIN,20));
+        setUIFont (new javax.swing.plaf.FontUIResource("Roboto",Font.PLAIN,15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //region Menubar
@@ -206,16 +212,13 @@ public class Frame extends JFrame implements ActionListener {
             InfoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 50));
 
 
-            String categories[] = {"Geeks", "Language", "Java",
-                    "Sudo Placement", "Python",
-                    "CS Subject", "Operating System",
-                    "Data Structure", "Algorithm",
-                    "PHP language", "JAVASCRIPT",
-                    "C Sharp" };
+            String categories[] = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall" };
+            imageMap = createImageMap(categories);
 
 
 
             JList list = new JList(categories);
+            list.setCellRenderer(new ListRenderer());
             scrollpane = new JScrollPane(list);
 
 
@@ -235,6 +238,20 @@ public class Frame extends JFrame implements ActionListener {
         } catch(Exception e){
             return;
         }
+    }
+
+    private Map<String, ImageIcon> createImageMap(String[] list) {
+        Map<String, ImageIcon> map = new HashMap<>();
+        try {
+            map.put("Database Server 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/databaseservericon.png"))));
+            map.put("Database Server 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/databaseservericon.png"))));
+            map.put("Webserver 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/webservericon.png"))));
+            map.put("Webserver 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/webservericon.png"))));
+            map.put("Firewall", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/firewallicon.png"))));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return map;
     }
 
 
@@ -263,7 +280,7 @@ public class Frame extends JFrame implements ActionListener {
             new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
             new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
             PrintWriter stdin = new PrintWriter(p.getOutputStream());
-            stdin.println("ssh 192.168.1.103 -p 80");
+            stdin.println("ssh 145.44.233.80");
             stdin.close();
             int returnCode = p.waitFor();
             System.out.println("Return code = " + returnCode);
@@ -325,6 +342,7 @@ public class Frame extends JFrame implements ActionListener {
 //        componentList.setText(network.toString());
     }
 
+
     private void OpenFile() {
         //from https://stackoverflow.com/questions/40255039/how-to-choose-file-in-java
         JFileChooser chooser = new JFileChooser();
@@ -380,6 +398,8 @@ public class Frame extends JFrame implements ActionListener {
                 e.printStackTrace();
             }
         }
+
+
 
 
         //endregion
