@@ -1,0 +1,108 @@
+{
+  "webServerComponents": [
+    {
+      "componentName": "HAL9001W",
+      "costInEuros": 2200.0,
+      "availability": 0.8,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "HAL9002W",
+      "costInEuros": 3200.0,
+      "availability": 0.9,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "HAL9003W",
+      "costInEuros": 5100.0,
+      "availability": 0.95,
+      "type": "Web",
+      "location": null
+    }
+  ],
+  "databaseServerComponents": [
+    {
+      "componentName": "HAL9001DB",
+      "costInEuros": 5100.0,
+      "availability": 0.9,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "HAL9002DB",
+      "costInEuros": 7700.0,
+      "availability": 0.95,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "HAL9003DB",
+      "costInEuros": 12200.0,
+      "availability": 0.98,
+      "type": "Database",
+      "location": null
+    }
+  ],
+  "firewallComponents": [
+    {
+      "componentName": "pfSense",
+      "costInEuros": 4000.0,
+      "availability": 0.99998,
+      "type": "Firewall",
+      "location": null
+    }
+  ],
+  "allComponentsCopy": [
+    {
+      "componentName": "HAL9001W",
+      "costInEuros": 2200.0,
+      "availability": 0.8,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "HAL9002W",
+      "costInEuros": 3200.0,
+      "availability": 0.9,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "HAL9003W",
+      "costInEuros": 5100.0,
+      "availability": 0.95,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "HAL9001DB",
+      "costInEuros": 5100.0,
+      "availability": 0.9,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "HAL9002DB",
+      "costInEuros": 7700.0,
+      "availability": 0.95,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "HAL9003DB",
+      "costInEuros": 12200.0,
+      "availability": 0.98,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "pfSense",
+      "costInEuros": 4000.0,
+      "availability": 0.99998,
+      "type": "Firewall",
+      "location": null
+    }
+  ]
+}

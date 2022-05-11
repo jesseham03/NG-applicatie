@@ -10,14 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
 public class Frame extends JFrame implements ActionListener {
-
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final ObjectWriter OBJECT_WRITER = OBJECT_MAPPER.writer().withDefaultPrettyPrinter();
@@ -34,14 +31,11 @@ public class Frame extends JFrame implements ActionListener {
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
 
-    private JTextArea componentList;
-
     private final JMenuItem openMonitoringButton;
-
     private final JMenuItem openOptimisationButton;
 
     private final JMenu openButton;
-    
+
     private final JMenuItem openFileButton;
     private final JMenuItem saveFileButton;
     private final JMenuItem quitButton;
@@ -54,7 +48,8 @@ public class Frame extends JFrame implements ActionListener {
 
     private JPanel optimisation;
 
-    private JScrollPane scrollpane;
+    private JScrollPane componentBar;
+    private final JPanel componentList;
     //endregion
 
     public Frame() {
@@ -90,7 +85,6 @@ public class Frame extends JFrame implements ActionListener {
         m1.add(quitButton);
         openButton.add(openMonitoringButton);
         openButton.add(openOptimisationButton);
-
         //endregion
 
         //region Bottombar
@@ -139,6 +133,21 @@ public class Frame extends JFrame implements ActionListener {
         netWorkDrawing = new JPanel();
         netWorkDrawing.setLayout(null);
 
+        componentList = new JPanel();
+        componentList.setLayout(new GridLayout(0, 1));
+        try (InputStream stream = getClass().getResourceAsStream("/defaultcomponents.json")) {
+            Network defaultNetwork = readFromJson(stream);
+            for (InfrastructureComponent component : defaultNetwork.getAllComponentsCopy()) {
+                JButton button = new JButton(component.getComponentName());
+                button.addActionListener(b -> this.addComponent(component));
+                componentList.add(button);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JScrollPane componentScrollPane = new JScrollPane(componentList);
+
+        getContentPane().add(BorderLayout.WEST, componentScrollPane);
         getContentPane().add(BorderLayout.CENTER, netWorkDrawing);
         getContentPane().add(BorderLayout.SOUTH, bottomPanel);
         getContentPane().add(BorderLayout.NORTH, menuBar);
@@ -148,14 +157,19 @@ public class Frame extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    //Numbers only acceptable input
+    private void addComponent(InfrastructureComponent component) {
+        network.addComponent(component);
+        RegenerateNetworkDrawing();
+    }
+
     private void setNumbersOnly(JTextField field, boolean isFloat) {
         field.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
-                    e.consume();
+                if (((c >= '0') && (c <= '9')) || (isFloat && (c == '.')) || (isFloat && (c == ',')) || (c == KeyEvent.VK_BACK_SPACE)) {
+                    return;
                 }
+                e.consume();
             }
         });
     }
@@ -176,7 +190,6 @@ public class Frame extends JFrame implements ActionListener {
             OpenOptimisation();
         }
     }
-
 
     private void OpenMonitoring() {
         try {
@@ -202,23 +215,17 @@ public class Frame extends JFrame implements ActionListener {
 
             JPanel MonitoringBar = new JPanel();
 
-            String[] categories = {"Geeks", "Language", "Java",
-                    "Sudo Placement", "Python",
-                    "CS Subject", "Operating System",
-                    "Data Structure", "Algorithm",
-                    "PHP language", "JAVASCRIPT",
-                    "C Sharp"};
+            String[] categories = {"Geeks", "Language", "Java", "Sudo Placement", "Python", "CS Subject", "Operating System", "Data Structure", "Algorithm", "PHP language", "JAVASCRIPT", "C Sharp"};
 
             JList list = new JList(categories);
-            scrollpane = new JScrollPane(list);
-
+            componentBar = new JScrollPane(list);
 
             setVisible(true);
 
             monitoring.add(MonitoringBar);
             monitoring.add(MonitoringInfo);
 
-            getContentPane().add(scrollpane, BorderLayout.WEST);
+            getContentPane().add(componentBar, BorderLayout.WEST);
             getContentPane().add(monitoring, BorderLayout.CENTER);
 
             bottomPanel.setVisible(false);
@@ -228,29 +235,25 @@ public class Frame extends JFrame implements ActionListener {
             setVisible(true);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
     }
-
 
     private void OpenOptimisation() {
         try {
             optimisation = new JPanel();
             optimisation.setLayout(new FlowLayout());
 
-
             setVisible(true);
 
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             monitoring.setVisible(false);
-
-
         } catch (Exception e) {
             return;
         }
     }
-
 
     private void CreateComponent() {
         try {
@@ -263,10 +266,6 @@ public class Frame extends JFrame implements ActionListener {
             ex.printStackTrace();
             return;
         }
-        String calculatedPrice = String.valueOf(network.calculatePrice());
-        totalPriceLabelValue.setText(calculatedPrice);
-        String calculatedAvailability = String.valueOf(network.calculateAvailability());
-        totalAvailabilityLabelValue.setText(calculatedAvailability);
         RegenerateNetworkDrawing();
     }
 
@@ -275,9 +274,7 @@ public class Frame extends JFrame implements ActionListener {
         JFileChooser chooser = new JFileChooser();
 
         //Set default open location
-        File saveDirectory = new File(
-                System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" +
-                        System.getProperty("file.separator") + "NerdygadgetsFiles");
+        File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" + System.getProperty("file.separator") + "NerdygadgetsFiles");
         //If the directory does not exist, make it
         boolean result = saveDirectory.mkdir();
         chooser.setCurrentDirectory(saveDirectory);
@@ -290,15 +287,23 @@ public class Frame extends JFrame implements ActionListener {
         }
         System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
         File file = chooser.getSelectedFile();
-        try (FileReader reader = new FileReader(file)) {
-            network = OBJECT_READER.readValue(reader, Network.class);
-        } catch (Exception e) {
+        try {
+            network = readFromJson(new FileInputStream(file));
+        } catch (IOException e) {
             e.printStackTrace();
         }
         RegenerateNetworkDrawing();
     }
 
+    private Network readFromJson(InputStream stream) throws IOException {
+        return OBJECT_READER.readValue(stream, Network.class);
+    }
+
     private void RegenerateNetworkDrawing() {
+        String calculatedPrice = String.valueOf(network.calculatePrice());
+        totalPriceLabelValue.setText(calculatedPrice);
+        String calculatedAvailability = String.valueOf(network.calculateAvailability());
+        totalAvailabilityLabelValue.setText(calculatedAvailability);
         netWorkDrawing.removeAll();
         for (InfrastructureComponent component : network.getAllComponentsCopy()) {
             drawComponent(component);
@@ -325,9 +330,7 @@ public class Frame extends JFrame implements ActionListener {
     private void saveToFile() {
         //Set the default save directory
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
-        File saveDirectory = new File(
-                System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" +
-                        System.getProperty("file.separator") + "NerdygadgetsFiles");
+        File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" + System.getProperty("file.separator") + "NerdygadgetsFiles");
         //If the directory does not exist, make it
         boolean result = saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
