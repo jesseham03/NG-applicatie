@@ -16,7 +16,6 @@ public class Frame extends JFrame implements ActionListener {
 
     //region JUIcomponents
     private final JButton addNewComponentButton;
-
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
@@ -244,16 +243,12 @@ public class Frame extends JFrame implements ActionListener {
         try{
             optimisation = new JPanel();
             optimisation.setLayout(new FlowLayout());
-
-
-            setVisible(true );
-
+            setVisible(true);
+            
             scrollpane.setVisible(false);
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             monitoring.setVisible(false);
-
-
         } catch(Exception e){
             return;
         }
