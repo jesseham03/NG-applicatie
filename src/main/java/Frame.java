@@ -203,19 +203,21 @@ public class Frame extends JFrame implements ActionListener {
                     "PHP language", "JAVASCRIPT",
                     "C Sharp" };
 
-            String[] command =
-                    {
-                            "cmd",
-                    };
-            Process p = Runtime.getRuntime().exec(command);
-            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
-            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
-            PrintWriter stdin = new PrintWriter(p.getOutputStream());
-            stdin.println("dir c:\\ /A /Q");
-            // write any other commands you want here
-            stdin.close();
-            int returnCode = p.waitFor();
-            System.out.println("Return code = " + returnCode);
+
+//            String[] command =
+//                    {
+//                            "cmd",
+//                    };
+//            Process p = Runtime.getRuntime().exec(command);
+//            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
+//            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
+//            PrintWriter stdin = new PrintWriter(p.getOutputStream());
+//            stdin.println("cat /proc/cpuinfo");
+//            stdin.println("");
+//            // write any other commands you want here
+//            stdin.close();
+//            int returnCode = p.waitFor();
+//            System.out.println("Return code = " + returnCode);
 
 
             JList list = new JList(categories);
