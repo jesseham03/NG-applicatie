@@ -181,7 +181,6 @@ public class Frame extends JFrame implements ActionListener {
             JLabel InfoProcessing = new JLabel("Processing Power Used: 50%");
             JLabel InfoDisk = new JLabel("Disk Usage: 40GB/64GB");
 
-
             MonitoringInfo.add(InfoName);
             MonitoringInfo.add(InfoAvailability);
             MonitoringInfo.add(InfoTimeAvailabality);
@@ -190,10 +189,8 @@ public class Frame extends JFrame implements ActionListener {
             MonitoringInfo.add(RefreshButton);
             RefreshButton.addActionListener(this);
 
-
-
             JPanel MonitoringBar = new JPanel();
-           MonitoringBar.setLayout(new GridLayout(7,1));
+            MonitoringBar.setLayout(new GridLayout(7,1));
 
             MonitoringBar.add(new MonitoringScroll(Color.magenta));
             MonitoringBar.add(new MonitoringScroll(Color.cyan));
@@ -202,37 +199,24 @@ public class Frame extends JFrame implements ActionListener {
             MonitoringBar.add(new MonitoringScroll(Color.yellow));
             MonitoringBar.add(new MonitoringScroll(Color.orange));
             MonitoringBar.add(new MonitoringScroll(Color.red));
+
             JScrollPane sp = new JScrollPane();
 //           sp.setViewportView(MonitoringBar);
            // sp.createVerticalScrollBar().setUnitIncrement(50);
-           sp.getVerticalScrollBar().setUnitIncrement(50);
+            sp.getVerticalScrollBar().setUnitIncrement(50);
 
-           MonitoringBar.add(sp);
-
-
-
+            MonitoringBar.add(sp);
 
             setVisible(true);
-
 
             monitoring.add(MonitoringBar);
             monitoring.add(MonitoringInfo);
 
-
-
-
-            getContentPane().add( monitoring);
-
-
-
+            getContentPane().add(monitoring);
 
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             optimisation.setVisible(false);
-
-
-
-
 
             setVisible(true);
 
@@ -245,6 +229,8 @@ public class Frame extends JFrame implements ActionListener {
     private void OpenOptimisation(){
         try{
             optimisation = new JPanel();
+            optimisation.setLayout(new FlowLayout());
+
 
             setVisible(true );
 
