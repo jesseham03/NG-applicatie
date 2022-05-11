@@ -16,6 +16,7 @@ public class Frame extends JFrame implements ActionListener {
 
     //region JUIcomponents
     private final JButton addNewComponentButton;
+    private JButton RefreshButton;
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
@@ -151,25 +152,6 @@ public class Frame extends JFrame implements ActionListener {
 //        addMouseMotionListener(frameDragListener);
         setLocationRelativeTo(null);
 
-        //for fonts
-//        m1.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        openButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        openHomeButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        openMonitoringButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        openOptimisationButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        openFileButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        saveFileButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        quitButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        newComponentLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        availabilityLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        priceLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        totalPriceLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        totalAvailabilityLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        totalAvailabilityLabelValue.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        totalPriceLabelValue.setFont(new Font("Roboto", Font.PLAIN, 20));
-//        addNewComponentButton.setFont(new Font("Roboto", Font.PLAIN, 20));
-
-
         setVisible(true);
     }
 
@@ -189,6 +171,8 @@ public class Frame extends JFrame implements ActionListener {
             OpenOptimisation();
         } else if(e.getSource() == openHomeButton){
             OpenHome();
+        } else if(e.getSource() == RefreshButton){
+            Refresh();
         }
     }
 
@@ -200,7 +184,7 @@ public class Frame extends JFrame implements ActionListener {
 
             JPanel MonitoringInfo = new JPanel();
             MonitoringInfo.setLayout(new GridLayout(6,1));
-            JButton RefreshButton = new JButton("Refresh");
+            RefreshButton = new JButton("Refresh");
             JLabel InfoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
             JLabel InfoAvailability = new JLabel("Availability: "  + MonitoringScroll.getAvailability());
             JLabel InfoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
@@ -214,7 +198,13 @@ public class Frame extends JFrame implements ActionListener {
             MonitoringInfo.add(RefreshButton);
             RefreshButton.addActionListener(this);
 
-            JPanel MonitoringBar = new JPanel();
+            RefreshButton.setFont(new Font("Robota", Font.PLAIN, 50));
+            InfoName.setFont(new Font("Robota", Font.PLAIN, 50));
+            InfoAvailability.setFont(new Font("Robota", Font.PLAIN, 50));
+            InfoDisk.setFont(new Font("Robota", Font.PLAIN, 50));
+            InfoProcessing.setFont(new Font("Robota", Font.PLAIN, 50));
+            InfoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 50));
+
 
             String categories[] = {"Geeks", "Language", "Java",
                     "Sudo Placement", "Python",
@@ -224,34 +214,22 @@ public class Frame extends JFrame implements ActionListener {
                     "C Sharp" };
 
 
-//            String[] command =
-//                    {
-//                            "cmd",
-//                    };
-//            Process p = Runtime.getRuntime().exec(command);
-//            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
-//            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
-//            PrintWriter stdin = new PrintWriter(p.getOutputStream());
-//            stdin.println("cat /proc/cpuinfo");
-//            stdin.println("");
-//            // write any other commands you want here
-//            stdin.close();
-//            int returnCode = p.waitFor();
-//            System.out.println("Return code = " + returnCode);
-
 
             JList list = new JList(categories);
             scrollpane = new JScrollPane(list);
 
 
             setVisible(true);
-            monitoring.add(MonitoringBar);
+            //monitoring.add(MonitoringBar);
             monitoring.add(MonitoringInfo);
             getContentPane().add(scrollpane, BorderLayout.WEST);
             getContentPane().add(monitoring, BorderLayout.CENTER);
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             optimisation.setVisible(false);
+
+
+
             setVisible(true);
 
         } catch(Exception e){
@@ -275,6 +253,25 @@ public class Frame extends JFrame implements ActionListener {
         }
     }
 
+    private void Refresh(){
+        try{
+            String[] command =
+                    {
+                            "cmd",
+                    };
+            Process p = Runtime.getRuntime().exec(command);
+            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
+            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
+            PrintWriter stdin = new PrintWriter(p.getOutputStream());
+            stdin.println("ssh 192.168.1.103 -p 80");
+            stdin.close();
+            int returnCode = p.waitFor();
+            System.out.println("Return code = " + returnCode);
+        }catch(Exception e){
+            return;
+        }
+    }
+
 
 
     private void OpenHome(){
@@ -283,7 +280,6 @@ public class Frame extends JFrame implements ActionListener {
             netWorkDrawing.setVisible(true);
             monitoring.setVisible(false);
             optimisation.setVisible(false);
-
         }catch(Exception e){
             return;
         }
