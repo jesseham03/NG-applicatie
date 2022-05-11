@@ -1,3 +1,4 @@
+import javax.management.monitor.Monitor;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -44,6 +45,8 @@ public class Frame extends JFrame implements ActionListener {
     private  JPanel monitoring;
 
     private JPanel optimisation;
+
+    private JScrollPane scrollpane;
     //endregion
 
     public Frame() {
@@ -170,16 +173,16 @@ public class Frame extends JFrame implements ActionListener {
     private void OpenMonitoring(){
         try{
             monitoring = new JPanel();
-            monitoring.setLayout(new GridLayout(1,2));
+            monitoring.setLayout(new FlowLayout());
 
             JPanel MonitoringInfo = new JPanel();
             MonitoringInfo.setLayout(new GridLayout(6,1));
             JButton RefreshButton = new JButton("Refresh");
-            JLabel InfoName = new JLabel("Serve Name: Server");
-            JLabel InfoAvailability = new JLabel("Availability: Available");
-            JLabel InfoTimeAvailabality = new JLabel("Uptime: 15:12");
-            JLabel InfoProcessing = new JLabel("Processing Power Used: 50%");
-            JLabel InfoDisk = new JLabel("Disk Usage: 40GB/64GB");
+            JLabel InfoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
+            JLabel InfoAvailability = new JLabel("Availability: "  + MonitoringScroll.getAvailability());
+            JLabel InfoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
+            JLabel InfoProcessing = new JLabel("Processing Power Used: " + MonitoringScroll.getProcessing());
+            JLabel InfoDisk = new JLabel("Disk Usage: "+  MonitoringScroll.getDiskUsage());
 
             MonitoringInfo.add(InfoName);
             MonitoringInfo.add(InfoAvailability);
@@ -190,29 +193,25 @@ public class Frame extends JFrame implements ActionListener {
             RefreshButton.addActionListener(this);
 
             JPanel MonitoringBar = new JPanel();
-            MonitoringBar.setLayout(new GridLayout(7,1));
 
-            MonitoringBar.add(new MonitoringScroll(Color.magenta));
-            MonitoringBar.add(new MonitoringScroll(Color.cyan));
-            MonitoringBar.add(new MonitoringScroll(Color.blue));
-            MonitoringBar.add(new MonitoringScroll(Color.green));
-            MonitoringBar.add(new MonitoringScroll(Color.yellow));
-            MonitoringBar.add(new MonitoringScroll(Color.orange));
-            MonitoringBar.add(new MonitoringScroll(Color.red));
+            String categories[] = {"Geeks", "Language", "Java",
+                    "Sudo Placement", "Python",
+                    "CS Subject", "Operating System",
+                    "Data Structure", "Algorithm",
+                    "PHP language", "JAVASCRIPT",
+                    "C Sharp" };
 
-            JScrollPane sp = new JScrollPane();
-//           sp.setViewportView(MonitoringBar);
-           // sp.createVerticalScrollBar().setUnitIncrement(50);
-            sp.getVerticalScrollBar().setUnitIncrement(50);
-
-            MonitoringBar.add(sp);
+            JList list = new JList(categories);
+            scrollpane = new JScrollPane(list);
+            
 
             setVisible(true);
 
             monitoring.add(MonitoringBar);
             monitoring.add(MonitoringInfo);
 
-            getContentPane().add(monitoring);
+            getContentPane().add(scrollpane, BorderLayout.WEST);
+            getContentPane().add(monitoring, BorderLayout.CENTER);
 
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);

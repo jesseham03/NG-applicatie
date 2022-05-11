@@ -4,13 +4,12 @@ import java.awt.Color;
 public class MonitoringScroll extends JPanel {
 
 
-    private String availability;
 
-    private String uptime;
-
-    private String processing;
-
-    private String diskUsage;
+    private static String componentName = "";
+    private static String availability = "";
+    private static String uptime = "";
+    private static String processing = "";
+    private static String diskUsage = "";
 
 
 
@@ -18,29 +17,33 @@ public class MonitoringScroll extends JPanel {
         setBackground(c);
     }
 
-    MonitoringScroll(String availability, String uptime, String processing, String diskUsage){
-        availability = this.availability;
-        uptime = this.uptime;
-        processing = this.processing;
-        diskUsage = this.diskUsage;
+    MonitoringScroll(String name, String availability, String uptime, String processing, String diskUsage){
+       this.componentName = name;
+       this.availability = availability;
+       this.uptime = uptime;
+       this.processing = processing;
+       this.diskUsage = diskUsage;
     }
 
 
 
+    public static String getComponentName() {
+        return componentName;
+    }
 
-    public String getAvailability() {
+    public static String getAvailability() {
         return availability;
     }
 
-    public String getUptime() {
+    public static String getUptime() {
         return uptime;
     }
 
-    public String getProcessing() {
+    public static String getProcessing() {
         return processing;
     }
 
-    public String getDiskUsage() {
+    public static String getDiskUsage() {
         return diskUsage;
     }
 }
