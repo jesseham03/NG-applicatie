@@ -56,6 +56,8 @@ public class Frame extends JFrame implements ActionListener {
         setIconImage(getDefaultToolkit().getImage(getClass().getResource("/Favicon2.png")));
         setTitle("NG Network-Application");
         setSize(650, 450);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUIFont (new javax.swing.plaf.FontUIResource("Roboto",Font.PLAIN,20));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //region Menubar
@@ -148,6 +150,25 @@ public class Frame extends JFrame implements ActionListener {
 //        addMouseListener(frameDragListener);
 //        addMouseMotionListener(frameDragListener);
         setLocationRelativeTo(null);
+
+        //for fonts
+//        m1.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        openButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        openHomeButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        openMonitoringButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        openOptimisationButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        openFileButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        saveFileButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        quitButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        newComponentLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        availabilityLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        priceLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        totalPriceLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        totalAvailabilityLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        totalAvailabilityLabelValue.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        totalPriceLabelValue.setFont(new Font("Roboto", Font.PLAIN, 20));
+//        addNewComponentButton.setFont(new Font("Roboto", Font.PLAIN, 20));
+
 
         setVisible(true);
     }
@@ -244,7 +265,7 @@ public class Frame extends JFrame implements ActionListener {
             optimisation = new JPanel();
             optimisation.setLayout(new FlowLayout());
             setVisible(true);
-            
+
             scrollpane.setVisible(false);
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
@@ -265,6 +286,16 @@ public class Frame extends JFrame implements ActionListener {
 
         }catch(Exception e){
             return;
+        }
+    }
+
+    public static void setUIFont (javax.swing.plaf.FontUIResource f){
+        java.util.Enumeration keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get (key);
+            if (value instanceof javax.swing.plaf.FontUIResource)
+                UIManager.put (key, f);
         }
     }
 
@@ -353,6 +384,8 @@ public class Frame extends JFrame implements ActionListener {
                 e.printStackTrace();
             }
         }
+
+
         //endregion
 
         //region Save as class
