@@ -1,31 +1,25 @@
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
+@Getter
+@NoArgsConstructor
 public class Network implements Serializable {
 
-    private final ArrayList<InfrastructureComponent> webServerComponents = new ArrayList<>();
-    private final ArrayList<InfrastructureComponent> databaseServerComponents = new ArrayList<>();
-    private final ArrayList<InfrastructureComponent> firewallComponents = new ArrayList<>();
+    private final List<InfrastructureComponent> webServerComponents = new ArrayList<>();
+    private final List<InfrastructureComponent> databaseServerComponents = new ArrayList<>();
+    private final List<InfrastructureComponent> firewallComponents = new ArrayList<>();
 
     //region Getters
-    public ArrayList<InfrastructureComponent> getAllComponentsCopy() {
-        ArrayList<InfrastructureComponent> tempList = new ArrayList<>();
+    public List<InfrastructureComponent> getAllComponentsCopy() {
+        List<InfrastructureComponent> tempList = new ArrayList<>();
         tempList.addAll(webServerComponents);
         tempList.addAll(databaseServerComponents);
         tempList.addAll(firewallComponents);
         return tempList;
-    }
-
-    public ArrayList<InfrastructureComponent> getWebServerComponents() {
-        return webServerComponents;
-    }
-
-    public ArrayList<InfrastructureComponent> getDatabaseServerComponents() {
-        return databaseServerComponents;
-    }
-
-    public ArrayList<InfrastructureComponent> getFirewallComponents() {
-        return firewallComponents;
     }
     //endregion
 
@@ -37,21 +31,45 @@ public class Network implements Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-//        String infoString = "";
-        return "\"MobilePhone [MobileBrand " + "brand" + ", MobileName = " + "name" + ", RAM = " + "ram" + ", ROM = " + "rom" + "]";
+    //Json formatting
+//    @Override
+//    public String toString() {
+//        JsonObject networkObject = new JsonObject();
+//
+//        JsonObject Webservers = new JsonObject();
 //        for (InfrastructureComponent component : webServerComponents) {
-//            infoString += ("\"Webserver [Name " + component.getComponentName() + ", Price = " + component.getCostInEuros() + ", Availavility = " + component.getAvailabilityPercentage() + "]");
+//            JsonObject web = new JsonObject();
+//            web.addProperty("Price", component.getCostInEuros());
+//            web.addProperty("Availability", component.getAvailability());
+//
+//            Webservers.add(component.getComponentName(), web);
 //        }
+//        networkObject.add("Webservers", Webservers);
+//
+//
+//        JsonObject Databases = new JsonObject();
 //        for (InfrastructureComponent component : databaseServerComponents) {
-//            infoString += ("\"DatabaseServer [Name " + component.getComponentName() + ", Price = " + component.getCostInEuros() + ", Availavility = " + component.getAvailabilityPercentage() + "]");
+//            JsonObject database = new JsonObject();
+//            database.addProperty("Price", component.getCostInEuros());
+//            database.addProperty("Availability", component.getAvailability());
+//
+//            Databases.add(component.getComponentName(), database);
 //        }
+//        networkObject.add("Databases", Databases);
+//
+//
+//        JsonObject FireWalls = new JsonObject();
 //        for (InfrastructureComponent component : firewallComponents) {
-//            infoString += ("\"Firewall [Name " + component.getComponentName() + ", Price = " + component.getCostInEuros() + ", Availavility = " + component.getAvailabilityPercentage() + "]");
+//            JsonObject firewall = new JsonObject();
+//            firewall.addProperty("Price", component.getCostInEuros());
+//            firewall.addProperty("Availability", component.getAvailability());
+//
+//            FireWalls.add(component.getComponentName(), firewall);
 //        }
-//        return infoString;
-    }
+//        networkObject.add("Firewalls", FireWalls);
+//
+//        return String.valueOf(networkObject);
+//    }
 
     public float calculatePrice() {
         float price = 0;
@@ -77,17 +95,17 @@ public class Network implements Serializable {
         float firewallAvailability = 1;
 
         for (InfrastructureComponent component : webServerComponents) {
-            webServerAvailability *= 1 - component.getAvailabilityPercentage();
+            webServerAvailability *= 1 - component.getAvailability();
         }
         webServerAvailability = (1 - webServerAvailability);
 
         for (InfrastructureComponent component : databaseServerComponents) {
-            dataBaseAvailability *= 1 - component.getAvailabilityPercentage();
+            dataBaseAvailability *= 1 - component.getAvailability();
         }
         dataBaseAvailability = (1 - dataBaseAvailability);
 
         for (InfrastructureComponent component : firewallComponents) {
-            firewallAvailability *= 1 - component.getAvailabilityPercentage();
+            firewallAvailability *= 1 - component.getAvailability();
         }
         firewallAvailability = (1 - firewallAvailability);
 

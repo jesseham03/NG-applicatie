@@ -1,7 +1,6 @@
-import com.google.gson.JsonObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -9,12 +8,20 @@ import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
 public class Frame extends JFrame implements ActionListener {
-    private final Network network = new Network();
+
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectWriter OBJECT_WRITER = OBJECT_MAPPER.writer().withDefaultPrettyPrinter();
+    private static final ObjectReader OBJECT_READER = OBJECT_MAPPER.reader();
+
+    private Network network = new Network();
 
     //region JUIcomponents
     private final JButton addNewComponentButton;
@@ -25,15 +32,11 @@ public class Frame extends JFrame implements ActionListener {
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
 
-    private JTextArea componentList;
-
     private final JMenuItem openFileButton;
     private final JMenuItem saveFileButton;
     private final JMenuItem quitButton;
 
     private final JComboBox<InfrastructureComponent.Type> typeComboBox;
-
-//    private DragDropPanel visualNetwork;
 
     private final JPanel netWorkDrawing;
     //endregion
@@ -76,8 +79,10 @@ public class Frame extends JFrame implements ActionListener {
         nameField = new JTextField(5);
         JLabel priceLabel = new JLabel("Price");
         priceField = new JTextField(5);
+        setNumbersOnly(priceField, false);
         JLabel availabilityLabel = new JLabel("Availability");
         availabilityField = new JTextField(5);
+        setNumbersOnly(availabilityField, true);
         typeComboBox = new JComboBox<>(InfrastructureComponent.Type.values());
         addNewComponentButton = new JButton("Add");
         addNewComponentButton.addActionListener(this);
@@ -111,27 +116,25 @@ public class Frame extends JFrame implements ActionListener {
         netWorkDrawing = new JPanel();
         netWorkDrawing.setLayout(null);
 
-        //For visual appearance
-//        visualNetwork = new DragDropPanel(network);
-
-        //For text appearance
-//        componentList = new JTextArea();
-//        componentList.setEditable(false);
-
         getContentPane().add(BorderLayout.CENTER, netWorkDrawing);
         getContentPane().add(BorderLayout.SOUTH, bottomPanel);
         getContentPane().add(BorderLayout.NORTH, menuBar);
-        //For visual appearance
-//        getContentPane().add(BorderLayout.CENTER, visualNetwork);
-        //For text appearance
-//        getContentPane().add(BorderLayout.CENTER, componentList);
 
-//        FrameDragListener frameDragListener = new FrameDragListener(this);
-//        addMouseListener(frameDragListener);
-//        addMouseMotionListener(frameDragListener);
         setLocationRelativeTo(null);
 
         setVisible(true);
+    }
+
+    //Numbers only acceptable input
+    private void setNumbersOnly(JTextField field, boolean isFloat) {
+        field.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                    e.consume();
+                }
+            }
+        });
     }
 
     @Override
@@ -154,26 +157,15 @@ public class Frame extends JFrame implements ActionListener {
             InfrastructureComponent.Type selectedType = (InfrastructureComponent.Type) typeComboBox.getSelectedItem();
             InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType);
             network.addComponent(addedComponent);
-
-            DraggableImageComponent visualComponent = new DraggableImageComponent(addedComponent);
-            netWorkDrawing.add(visualComponent);
-            visualComponent.setOverbearing(true);
-
-            int size = 50;
-            int centerX = netWorkDrawing.getWidth() / 2;
-            int centerY = netWorkDrawing.getHeight() / 2;
-            visualComponent.setSize(size, size);
-            visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
-            netWorkDrawing.repaint();
         } catch (NumberFormatException ex) {
+            ex.printStackTrace();
             return;
         }
         String calculatedPrice = String.valueOf(network.calculatePrice());
         totalPriceLabelValue.setText(calculatedPrice);
         String calculatedAvailability = String.valueOf(network.calculateAvailability());
         totalAvailabilityLabelValue.setText(calculatedAvailability);
-        //For text appearance
-//        componentList.setText(network.toString());
+        RegenerateNetworkDrawing();
     }
 
     private void OpenFile() {
@@ -196,22 +188,32 @@ public class Frame extends JFrame implements ActionListener {
         }
         System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
         File file = chooser.getSelectedFile();
-        JSONParser parser = new JSONParser();
-        try {
-            Object obj = parser.parse(new FileReader(file));
-            JSONObject jsonObject = (JSONObject) obj;
-            String name = (String) jsonObject.get("Name");
-            String course = (String) jsonObject.get("Course");
-            JSONArray subjects = (JSONArray) jsonObject.get("Subjects");
-            System.out.println("Name: " + name);
-            System.out.println("Course: " + course);
-            System.out.println("Subjects:");
-            for (Object subject : subjects) {
-                System.out.println(subject);
-            }
+        try (FileReader reader = new FileReader(file)) {
+            network = OBJECT_READER.readValue(reader, Network.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        RegenerateNetworkDrawing();
+    }
+
+    private void RegenerateNetworkDrawing() {
+        netWorkDrawing.removeAll();
+        for (InfrastructureComponent component : network.getAllComponentsCopy()) {
+            drawComponent(component);
+        }
+    }
+
+    private void drawComponent(InfrastructureComponent addedComponent) {
+        DraggableImageComponent visualComponent = new DraggableImageComponent(addedComponent);
+        netWorkDrawing.add(visualComponent);
+        visualComponent.setOverbearing(true);
+
+        int size = 50;
+        int centerX = netWorkDrawing.getWidth() / 2;
+        int centerY = netWorkDrawing.getHeight() / 2;
+        visualComponent.setSize(size, size);
+        visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
+        netWorkDrawing.repaint();
     }
 
     private void saveToFile() {
@@ -221,7 +223,7 @@ public class Frame extends JFrame implements ActionListener {
                 System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" +
                         System.getProperty("file.separator") + "NerdygadgetsFiles");
         //If the directory does not exist, make it
-        saveDirectory.mkdir();
+        boolean result = saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
 
         //Save as Json test
@@ -234,25 +236,9 @@ public class Frame extends JFrame implements ActionListener {
             if (!file.getName().toLowerCase().endsWith(".json")) {
                 file = new File(file.getParentFile(), file.getName() + ".json");
             }
-            try {
-                JsonObject jsonObject = new JsonObject();
-
-                jsonObject.addProperty("metric", "mihirmonani");
-                jsonObject.addProperty("timestamp", 1346846400);
-                jsonObject.addProperty("value", 14);
-
-                JsonObject jObject = new JsonObject();
-
-                jObject.addProperty("host", "splunk");
-                jObject.addProperty("host1", "splunk1");
-
-                jsonObject.add("tags", jObject);
-
-                System.out.println(jsonObject);
-
-                FileWriter myWriter = new FileWriter(file);
-                myWriter.write(String.valueOf(jsonObject));
-                myWriter.close();
+            try (FileWriter myWriter = new FileWriter(file)) {
+                String json = OBJECT_WRITER.writeValueAsString(network);
+                myWriter.write(json);
                 Desktop.getDesktop().open(file);
             } catch (Exception e) {
                 e.printStackTrace();
