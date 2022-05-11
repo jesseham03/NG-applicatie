@@ -96,7 +96,7 @@ public class Frame extends JFrame implements ActionListener {
         nameField = new JTextField(5);
         JLabel priceLabel = new JLabel("Price");
         priceField = new JTextField(5);
-        setNumbersOnly(priceField, false);
+        setNumbersOnly(priceField, true);
         JLabel availabilityLabel = new JLabel("Availability");
         availabilityField = new JTextField(5);
         setNumbersOnly(availabilityField, true);
