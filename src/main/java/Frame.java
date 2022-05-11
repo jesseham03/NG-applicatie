@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import static java.awt.Toolkit.getDefaultToolkit;
+
 public class Frame extends JFrame implements ActionListener {
 
 
@@ -32,6 +34,14 @@ public class Frame extends JFrame implements ActionListener {
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
 
+    private JTextArea componentList;
+
+    private final JMenuItem openMonitoringButton;
+
+    private final JMenuItem openOptimisationButton;
+
+    private final JMenu openButton;
+    
     private final JMenuItem openFileButton;
     private final JMenuItem saveFileButton;
     private final JMenuItem quitButton;
@@ -39,6 +49,12 @@ public class Frame extends JFrame implements ActionListener {
     private final JComboBox<InfrastructureComponent.Type> typeComboBox;
 
     private final JPanel netWorkDrawing;
+    private final JPanel bottomPanel;
+    private JPanel monitoring;
+
+    private JPanel optimisation;
+
+    private JScrollPane scrollpane;
     //endregion
 
     public Frame() {
@@ -48,30 +64,37 @@ public class Frame extends JFrame implements ActionListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        setTitle("Application");
+        setIconImage(getDefaultToolkit().getImage(getClass().getResource("/Favicon2.png")));
+        setTitle("NG Network-Application");
         setSize(650, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
-        JMenu m1 = new JMenu("File");
-        JMenu m2 = new JMenu("Help");
+        JMenu m1 = new JMenu("Start");
+        openButton = new JMenu("Open");
         menuBar.add(m1);
-        menuBar.add(m2);
+        menuBar.add(openButton);
+        openOptimisationButton = new JMenuItem("Optimisation");
+        openMonitoringButton = new JMenuItem("Monitoring");
         openFileButton = new JMenuItem("Open");
         saveFileButton = new JMenuItem("Save as");
         quitButton = new JMenuItem("Quit");
+        openOptimisationButton.addActionListener(this);
+        openMonitoringButton.addActionListener(this);
         openFileButton.addActionListener(this);
         saveFileButton.addActionListener(this);
         quitButton.addActionListener(this);
         m1.add(openFileButton);
         m1.add(saveFileButton);
         m1.add(quitButton);
+        openButton.add(openMonitoringButton);
+        openButton.add(openOptimisationButton);
+
         //endregion
 
         //region Bottombar
-        JPanel bottomPanel = new JPanel();
+        bottomPanel = new JPanel();
 
         //region AddNewComponent section
         JPanel newComponentPanel = new JPanel();
@@ -147,8 +170,87 @@ public class Frame extends JFrame implements ActionListener {
             OpenFile();
         } else if (e.getSource() == saveFileButton) {
             saveToFile();
+        } else if (e.getSource() == openMonitoringButton) {
+            OpenMonitoring();
+        } else if (e.getSource() == openOptimisationButton) {
+            OpenOptimisation();
         }
     }
+
+
+    private void OpenMonitoring() {
+        try {
+            monitoring = new JPanel();
+            monitoring.setLayout(new FlowLayout());
+
+            JPanel MonitoringInfo = new JPanel();
+            MonitoringInfo.setLayout(new GridLayout(6, 1));
+            JButton RefreshButton = new JButton("Refresh");
+            JLabel InfoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
+            JLabel InfoAvailability = new JLabel("Availability: " + MonitoringScroll.getAvailability());
+            JLabel InfoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
+            JLabel InfoProcessing = new JLabel("Processing Power Used: " + MonitoringScroll.getProcessing());
+            JLabel InfoDisk = new JLabel("Disk Usage: " + MonitoringScroll.getDiskUsage());
+
+            MonitoringInfo.add(InfoName);
+            MonitoringInfo.add(InfoAvailability);
+            MonitoringInfo.add(InfoTimeAvailabality);
+            MonitoringInfo.add(InfoProcessing);
+            MonitoringInfo.add(InfoDisk);
+            MonitoringInfo.add(RefreshButton);
+            RefreshButton.addActionListener(this);
+
+            JPanel MonitoringBar = new JPanel();
+
+            String[] categories = {"Geeks", "Language", "Java",
+                    "Sudo Placement", "Python",
+                    "CS Subject", "Operating System",
+                    "Data Structure", "Algorithm",
+                    "PHP language", "JAVASCRIPT",
+                    "C Sharp"};
+
+            JList list = new JList(categories);
+            scrollpane = new JScrollPane(list);
+
+
+            setVisible(true);
+
+            monitoring.add(MonitoringBar);
+            monitoring.add(MonitoringInfo);
+
+            getContentPane().add(scrollpane, BorderLayout.WEST);
+            getContentPane().add(monitoring, BorderLayout.CENTER);
+
+            bottomPanel.setVisible(false);
+            netWorkDrawing.setVisible(false);
+            optimisation.setVisible(false);
+
+            setVisible(true);
+
+        } catch (Exception e) {
+            return;
+        }
+    }
+
+
+    private void OpenOptimisation() {
+        try {
+            optimisation = new JPanel();
+            optimisation.setLayout(new FlowLayout());
+
+
+            setVisible(true);
+
+            bottomPanel.setVisible(false);
+            netWorkDrawing.setVisible(false);
+            monitoring.setVisible(false);
+
+
+        } catch (Exception e) {
+            return;
+        }
+    }
+
 
     private void CreateComponent() {
         try {
