@@ -31,46 +31,6 @@ public class Network implements Serializable {
         }
     }
 
-    //Json formatting
-//    @Override
-//    public String toString() {
-//        JsonObject networkObject = new JsonObject();
-//
-//        JsonObject Webservers = new JsonObject();
-//        for (InfrastructureComponent component : webServerComponents) {
-//            JsonObject web = new JsonObject();
-//            web.addProperty("Price", component.getCostInEuros());
-//            web.addProperty("Availability", component.getAvailability());
-//
-//            Webservers.add(component.getComponentName(), web);
-//        }
-//        networkObject.add("Webservers", Webservers);
-//
-//
-//        JsonObject Databases = new JsonObject();
-//        for (InfrastructureComponent component : databaseServerComponents) {
-//            JsonObject database = new JsonObject();
-//            database.addProperty("Price", component.getCostInEuros());
-//            database.addProperty("Availability", component.getAvailability());
-//
-//            Databases.add(component.getComponentName(), database);
-//        }
-//        networkObject.add("Databases", Databases);
-//
-//
-//        JsonObject FireWalls = new JsonObject();
-//        for (InfrastructureComponent component : firewallComponents) {
-//            JsonObject firewall = new JsonObject();
-//            firewall.addProperty("Price", component.getCostInEuros());
-//            firewall.addProperty("Availability", component.getAvailability());
-//
-//            FireWalls.add(component.getComponentName(), firewall);
-//        }
-//        networkObject.add("Firewalls", FireWalls);
-//
-//        return String.valueOf(networkObject);
-//    }
-
     public float calculatePrice() {
         float price = 0;
         for (InfrastructureComponent component : webServerComponents) {

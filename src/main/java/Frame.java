@@ -155,7 +155,7 @@ public class Frame extends JFrame implements ActionListener {
             float price = Float.parseFloat(priceField.getText());
             float availability = Float.parseFloat(availabilityField.getText());
             InfrastructureComponent.Type selectedType = (InfrastructureComponent.Type) typeComboBox.getSelectedItem();
-            InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType);
+            InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType, null);
             network.addComponent(addedComponent);
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
@@ -208,11 +208,15 @@ public class Frame extends JFrame implements ActionListener {
         netWorkDrawing.add(visualComponent);
         visualComponent.setOverbearing(true);
 
-        int size = 50;
-        int centerX = netWorkDrawing.getWidth() / 2;
-        int centerY = netWorkDrawing.getHeight() / 2;
+        int size = 75;
+        if (addedComponent.getLocation() == null) {
+            int centerX = netWorkDrawing.getWidth() / 2;
+            int centerY = netWorkDrawing.getHeight() / 2;
+            visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
+        } else {
+            visualComponent.setLocation(addedComponent.getLocation());
+        }
         visualComponent.setSize(size, size);
-        visualComponent.setLocation(centerX - visualComponent.getWidth() / 2, centerY - visualComponent.getHeight() / 2);
         netWorkDrawing.repaint();
     }
 
@@ -226,7 +230,7 @@ public class Frame extends JFrame implements ActionListener {
         boolean result = saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
 
-        //Save as Json test
+        //Save as Json
         int option = fileChooser.showSaveDialog(this);
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
@@ -263,49 +267,5 @@ public class Frame extends JFrame implements ActionListener {
 //            }
 //        }
         //endregion
-
-        //region Save as class
-//        int option = fileChooser.showSaveDialog(this);
-//        if (option == JFileChooser.APPROVE_OPTION) {
-//            File file = fileChooser.getSelectedFile();
-//            if (file == null) {
-//                return;
-//            }
-//            try {
-//                FileOutputStream fileOut = new FileOutputStream(saveDirectory + "testa.asd");
-//                ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-//                objectOut.writeObject(network);
-//                objectOut.close();
-//                System.out.println("The Object  was succesfully written to a file");
-//
-//            } catch (Exception ex) {
-//                ex.printStackTrace();
-//            }
-//        }
-        //endregion
     }
-
-    //    public static class FrameDragListener extends MouseAdapter {
-//        //From https://stackoverflow.com/questions/16046824/making-a-java-swing-frame-movable-and-setundecorated
-//
-//        private final JFrame frame;
-//        private Point mouseDownCompCoords = null;
-//
-//        public FrameDragListener(JFrame frame) {
-//            this.frame = frame;
-//        }
-//
-//        public void mouseReleased(MouseEvent e) {
-//            mouseDownCompCoords = null;
-//        }
-//
-//        public void mousePressed(MouseEvent e) {
-//            mouseDownCompCoords = e.getPoint();
-//        }
-//
-//        public void mouseDragged(MouseEvent e) {
-//            Point currCoords = e.getLocationOnScreen();
-//            frame.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
-//        }
-//    }
 }

@@ -8,11 +8,11 @@ public class DraggableComponent extends JComponent {
     protected Point anchorPoint;
     protected boolean overbearing = false;
 
-    public DraggableComponent() {
-        addDragListeners();
+    public DraggableComponent(InfrastructureComponent component) {
+        addDragListeners(component);
     }
 
-    private void addDragListeners() {
+    private void addDragListeners(InfrastructureComponent component) {
         final DraggableComponent handle = this;
         addMouseMotionListener(new MouseAdapter() {
 
@@ -31,6 +31,7 @@ public class DraggableComponent extends JComponent {
                 Point mouseOnScreen = e.getLocationOnScreen();
                 Point position = new Point(mouseOnScreen.x - parentOnScreen.x - anchorX, mouseOnScreen.y - parentOnScreen.y - anchorY);
                 setLocation(position);
+                component.setLocation(position);
 
                 if (overbearing) {
                     getParent().setComponentZOrder(handle, 0);

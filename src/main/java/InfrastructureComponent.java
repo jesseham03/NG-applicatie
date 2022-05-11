@@ -3,6 +3,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.awt.*;
+
 @ToString
 @Getter
 @AllArgsConstructor
@@ -18,4 +20,10 @@ public class InfrastructureComponent {
     private float costInEuros;
     private float availability;
     private Type type;
+
+    private Point location;
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
 }

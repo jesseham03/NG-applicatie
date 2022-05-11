@@ -8,7 +8,7 @@ public class DraggableImageComponent extends DraggableComponent implements Image
     private final InfrastructureComponent component;
 
     public DraggableImageComponent(InfrastructureComponent component) {
-        super();
+        super(component);
         this.component = component;
         setLayout(null);
     }
