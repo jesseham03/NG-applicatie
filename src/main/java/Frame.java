@@ -11,6 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
@@ -24,6 +28,7 @@ public class Frame extends JFrame implements ActionListener {
 
     //region JUIcomponents
     private final JButton addNewComponentButton;
+    private JButton RefreshButton;
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
@@ -33,12 +38,12 @@ public class Frame extends JFrame implements ActionListener {
 
     private final JMenuItem openMonitoringButton;
     private final JMenuItem openOptimisationButton;
-
-    private final JMenu openButton;
-
+    private final JMenuItem openHomeButton;
     private final JMenuItem openFileButton;
     private final JMenuItem saveFileButton;
     private final JMenuItem quitButton;
+
+    private final JMenu openButton;
 
     private final JComboBox<InfrastructureComponent.Type> typeComboBox;
 
@@ -47,6 +52,10 @@ public class Frame extends JFrame implements ActionListener {
     private JPanel monitoring;
 
     private JPanel optimisation;
+
+    private JScrollPane scrollpane;
+
+    public static Map<String, ImageIcon> imageMap = null;
 
     private JScrollPane componentBar;
     private final JPanel componentList;
@@ -62,6 +71,8 @@ public class Frame extends JFrame implements ActionListener {
         setIconImage(getDefaultToolkit().getImage(getClass().getResource("/Favicon2.png")));
         setTitle("NG Network-Application");
         setSize(650, 450);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUIFont (new javax.swing.plaf.FontUIResource("Roboto",Font.PLAIN,15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //region Menubar
@@ -72,9 +83,11 @@ public class Frame extends JFrame implements ActionListener {
         menuBar.add(openButton);
         openOptimisationButton = new JMenuItem("Optimisation");
         openMonitoringButton = new JMenuItem("Monitoring");
+        openHomeButton = new JMenuItem("Home");
         openFileButton = new JMenuItem("Open");
         saveFileButton = new JMenuItem("Save as");
         quitButton = new JMenuItem("Quit");
+        openHomeButton.addActionListener(this);
         openOptimisationButton.addActionListener(this);
         openMonitoringButton.addActionListener(this);
         openFileButton.addActionListener(this);
@@ -83,6 +96,7 @@ public class Frame extends JFrame implements ActionListener {
         m1.add(openFileButton);
         m1.add(saveFileButton);
         m1.add(quitButton);
+        openButton.add(openHomeButton);
         openButton.add(openMonitoringButton);
         openButton.add(openOptimisationButton);
         //endregion
@@ -188,6 +202,10 @@ public class Frame extends JFrame implements ActionListener {
             OpenMonitoring();
         } else if (e.getSource() == openOptimisationButton) {
             OpenOptimisation();
+        } else if(e.getSource() == openHomeButton){
+            OpenHome();
+        } else if(e.getSource() == RefreshButton){
+            Refresh();
         }
     }
 
@@ -197,8 +215,8 @@ public class Frame extends JFrame implements ActionListener {
             monitoring.setLayout(new FlowLayout());
 
             JPanel MonitoringInfo = new JPanel();
-            MonitoringInfo.setLayout(new GridLayout(6, 1));
-            JButton RefreshButton = new JButton("Refresh");
+            MonitoringInfo.setLayout(new GridLayout(6,1));
+            RefreshButton = new JButton("Refresh");
             JLabel InfoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
             JLabel InfoAvailability = new JLabel("Availability: " + MonitoringScroll.getAvailability());
             JLabel InfoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
@@ -213,24 +231,34 @@ public class Frame extends JFrame implements ActionListener {
             MonitoringInfo.add(RefreshButton);
             RefreshButton.addActionListener(this);
 
-            JPanel MonitoringBar = new JPanel();
+            RefreshButton.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoName.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoAvailability.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoDisk.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoProcessing.setFont(new Font("Robota", Font.PLAIN, 30));
+            InfoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 30));
 
-            String[] categories = {"Geeks", "Language", "Java", "Sudo Placement", "Python", "CS Subject", "Operating System", "Data Structure", "Algorithm", "PHP language", "JAVASCRIPT", "C Sharp"};
+
+            String categories[] = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall" };
+            imageMap = createImageMap(categories);
+
+
 
             JList list = new JList(categories);
-            componentBar = new JScrollPane(list);
+            list.setCellRenderer(new ListRenderer());
+            scrollpane = new JScrollPane(list);
+
 
             setVisible(true);
-
-            monitoring.add(MonitoringBar);
+            //monitoring.add(MonitoringBar);
             monitoring.add(MonitoringInfo);
-
-            getContentPane().add(componentBar, BorderLayout.WEST);
+            getContentPane().add(scrollpane, BorderLayout.WEST);
             getContentPane().add(monitoring, BorderLayout.CENTER);
-
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             optimisation.setVisible(false);
+
+
 
             setVisible(true);
 
@@ -240,6 +268,20 @@ public class Frame extends JFrame implements ActionListener {
         }
     }
 
+    private Map<String, ImageIcon> createImageMap(String[] list) {
+        Map<String, ImageIcon> map = new HashMap<>();
+        try {
+            map.put("Database Server 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/databaseservericon.png"))));
+            map.put("Database Server 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/databaseservericon.png"))));
+            map.put("Webserver 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/webservericon.png"))));
+            map.put("Webserver 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/webservericon.png"))));
+            map.put("Firewall", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/firewallicon.png"))));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return map;
+    }
+
     private void OpenOptimisation() {
         try {
             optimisation = new JPanel();
@@ -247,6 +289,7 @@ public class Frame extends JFrame implements ActionListener {
 
             setVisible(true);
 
+            scrollpane.setVisible(false);
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             monitoring.setVisible(false);
@@ -254,6 +297,49 @@ public class Frame extends JFrame implements ActionListener {
             return;
         }
     }
+
+    private void Refresh(){
+        try{
+            String[] command =
+                    {
+                            "cmd",
+                    };
+            Process p = Runtime.getRuntime().exec(command);
+            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
+            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
+            PrintWriter stdin = new PrintWriter(p.getOutputStream());
+            stdin.println("ssh 145.44.233.80");
+            stdin.close();
+            int returnCode = p.waitFor();
+            System.out.println("Return code = " + returnCode);
+        }catch(Exception e){
+            return;
+        }
+    }
+
+
+
+    private void OpenHome(){
+        try{
+            bottomPanel.setVisible(true);
+            netWorkDrawing.setVisible(true);
+            monitoring.setVisible(false);
+            optimisation.setVisible(false);
+        }catch(Exception e){
+            return;
+        }
+    }
+
+    public static void setUIFont (javax.swing.plaf.FontUIResource f){
+        java.util.Enumeration keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get (key);
+            if (value instanceof javax.swing.plaf.FontUIResource)
+                UIManager.put (key, f);
+        }
+    }
+
 
     private void CreateComponent() {
         try {
@@ -268,6 +354,7 @@ public class Frame extends JFrame implements ActionListener {
         }
         RegenerateNetworkDrawing();
     }
+
 
     private void OpenFile() {
         //from https://stackoverflow.com/questions/40255039/how-to-choose-file-in-java

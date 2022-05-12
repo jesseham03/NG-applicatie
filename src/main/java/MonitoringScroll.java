@@ -2,16 +2,11 @@ import javax.swing.*;
 import java.awt.Color;
 
 public class MonitoringScroll extends JPanel {
-
-
-
     private static String componentName = "";
     private static String availability = "";
     private static String uptime = "";
     private static String processing = "";
     private static String diskUsage = "";
-
-
 
     MonitoringScroll(Color c ){
         setBackground(c);
@@ -24,8 +19,6 @@ public class MonitoringScroll extends JPanel {
        this.processing = processing;
        this.diskUsage = diskUsage;
     }
-
-
 
     public static String getComponentName() {
         return componentName;
