@@ -1,25 +1,19 @@
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.awt.*;
 
+@Builder
 @ToString
 @Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class InfrastructureComponent {
-    enum Type {
-        Web,
-        Database,
-        Firewall
-    }
 
     private String componentName;
-    private float costInEuros;
-    private float availability;
-    private Type type;
+    private double costInEuros;
+    private double availability;
+    private ComponentType type;
 
     private Point location;
 

@@ -1,19 +1,20 @@
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
+@AllArgsConstructor
 public class Network implements Serializable {
 
-    private final List<InfrastructureComponent> webServerComponents = new ArrayList<>();
-    private final List<InfrastructureComponent> databaseServerComponents = new ArrayList<>();
-    private final List<InfrastructureComponent> firewallComponents = new ArrayList<>();
+    private List<InfrastructureComponent> webServerComponents = new ArrayList<>();
+    private List<InfrastructureComponent> databaseServerComponents = new ArrayList<>();
+    private List<InfrastructureComponent> firewallComponents = new ArrayList<>();
 
-    //region Getters
     public List<InfrastructureComponent> getAllComponentsCopy() {
         List<InfrastructureComponent> tempList = new ArrayList<>();
         tempList.addAll(webServerComponents);
@@ -21,7 +22,6 @@ public class Network implements Serializable {
         tempList.addAll(firewallComponents);
         return tempList;
     }
-    //endregion
 
     public void addComponent(InfrastructureComponent component) {
         switch (component.getType()) {
@@ -31,8 +31,16 @@ public class Network implements Serializable {
         }
     }
 
-    public float calculatePrice() {
-        float price = 0;
+    public void removeComponent(InfrastructureComponent component) {
+        switch (component.getType()) {
+            case Web -> webServerComponents.remove(component);
+            case Database -> databaseServerComponents.remove(component);
+            case Firewall -> firewallComponents.remove(component);
+        }
+    }
+
+    public double calculatePrice() {
+        double price = 0;
         for (InfrastructureComponent component : webServerComponents) {
             price += component.getCostInEuros();
         }
@@ -45,19 +53,23 @@ public class Network implements Serializable {
         return price;
     }
 
-    public float calculateAvailability() {
+    public double calculateAvailability() {
         if (webServerComponents.isEmpty() || databaseServerComponents.isEmpty() || firewallComponents.isEmpty()) {
             return 0;
         }
 
-        return getAvailability(firewallComponents) * getAvailability(databaseServerComponents) * getAvailability(webServerComponents);
+        return 100d * getAvailability(firewallComponents) * getAvailability(databaseServerComponents) * getAvailability(webServerComponents);
     }
 
-    private float getAvailability(List<InfrastructureComponent> webServerComponents) {
-        float availability = 1;
+    private double getAvailability(List<InfrastructureComponent> webServerComponents) {
+        double availability = 1d;
         for (InfrastructureComponent component : webServerComponents) {
-            availability *= 1 - component.getAvailability();
+            availability *= 1d - component.getAvailability() / 100d;
         }
-        return 1 - availability;
+        return 1d - availability;
+    }
+
+    public Network copy() {
+        return new Network(new ArrayList<>(webServerComponents), new ArrayList<>(databaseServerComponents), new ArrayList<>(firewallComponents));
     }
 }

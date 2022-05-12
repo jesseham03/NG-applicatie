@@ -43,7 +43,7 @@ public class Frame extends JFrame implements ActionListener {
 
     private final JMenu openButton;
 
-    private final JComboBox<InfrastructureComponent.Type> typeComboBox;
+    private final JComboBox<ComponentType> typeComboBox;
 
     private final JPanel netWorkDrawing;
     private final JPanel bottomPanel;
@@ -112,7 +112,7 @@ public class Frame extends JFrame implements ActionListener {
         JLabel availabilityLabel = new JLabel("Availability");
         availabilityField = new JTextField(5);
         setNumbersOnly(availabilityField, true);
-        typeComboBox = new JComboBox<>(InfrastructureComponent.Type.values());
+        typeComboBox = new JComboBox<>(ComponentType.values());
         addNewComponentButton = new JButton("Add");
         addNewComponentButton.addActionListener(this);
         newComponentPanel.add(newComponentLabel);
@@ -174,11 +174,11 @@ public class Frame extends JFrame implements ActionListener {
         RegenerateNetworkDrawing();
     }
 
-    private void setNumbersOnly(JTextField field, boolean isFloat) {
+    private void setNumbersOnly(JTextField field, boolean isDouble) {
         field.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (((c >= '0') && (c <= '9')) || (isFloat && (c == '.')) || (isFloat && (c == ',')) || (c == KeyEvent.VK_BACK_SPACE)) {
+                if (((c >= '0') && (c <= '9')) || (isDouble && (c == '.')) || (isDouble && (c == ',')) || (c == KeyEvent.VK_BACK_SPACE)) {
                     return;
                 }
                 e.consume();
@@ -333,9 +333,9 @@ public class Frame extends JFrame implements ActionListener {
 
     private void CreateComponent() {
         try {
-            float price = Float.parseFloat(priceField.getText());
-            float availability = Float.parseFloat(availabilityField.getText());
-            InfrastructureComponent.Type selectedType = (InfrastructureComponent.Type) typeComboBox.getSelectedItem();
+            double price = Double.parseDouble(priceField.getText());
+            double availability = Double.parseDouble(availabilityField.getText());
+            ComponentType selectedType = (ComponentType) typeComboBox.getSelectedItem();
             InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType, null);
             network.addComponent(addedComponent);
         } catch (NumberFormatException ex) {
