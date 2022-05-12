@@ -50,25 +50,14 @@ public class Network implements Serializable {
             return 0;
         }
 
-        float webServerAvailability = 1;
-        float dataBaseAvailability = 1;
-        float firewallAvailability = 1;
+        return getAvailability(firewallComponents) * getAvailability(databaseServerComponents) * getAvailability(webServerComponents);
+    }
 
+    private float getAvailability(List<InfrastructureComponent> webServerComponents) {
+        float availability = 1;
         for (InfrastructureComponent component : webServerComponents) {
-            webServerAvailability *= 1 - component.getAvailability();
+            availability *= 1 - component.getAvailability();
         }
-        webServerAvailability = (1 - webServerAvailability);
-
-        for (InfrastructureComponent component : databaseServerComponents) {
-            dataBaseAvailability *= 1 - component.getAvailability();
-        }
-        dataBaseAvailability = (1 - dataBaseAvailability);
-
-        for (InfrastructureComponent component : firewallComponents) {
-            firewallAvailability *= 1 - component.getAvailability();
-        }
-        firewallAvailability = (1 - firewallAvailability);
-
-        return firewallAvailability * dataBaseAvailability * webServerAvailability;
+        return 1 - availability;
     }
 }

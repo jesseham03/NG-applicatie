@@ -301,7 +301,7 @@ public class Frame extends JFrame implements ActionListener {
             new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
             new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
             PrintWriter stdin = new PrintWriter(p.getOutputStream());
-            stdin.println("ssh 145.44.233.80");
+            stdin.println("ssh -tt 145.44.233.80");
             stdin.close();
             int returnCode = p.waitFor();
             System.out.println("Return code = " + returnCode);
