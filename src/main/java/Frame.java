@@ -11,8 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +70,7 @@ public class Frame extends JFrame implements ActionListener {
         setTitle("NG Network-Application");
         setSize(650, 450);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUIFont (new javax.swing.plaf.FontUIResource("Roboto",Font.PLAIN,15));
+        setUIFont(new javax.swing.plaf.FontUIResource("Roboto", Font.PLAIN, 15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //region Menubar
@@ -199,23 +197,23 @@ public class Frame extends JFrame implements ActionListener {
         } else if (e.getSource() == saveFileButton) {
             saveToFile();
         } else if (e.getSource() == openMonitoringButton) {
-            OpenMonitoring();
+            openMonitoring();
         } else if (e.getSource() == openOptimisationButton) {
-            OpenOptimisation();
-        } else if(e.getSource() == openHomeButton){
-            OpenHome();
-        } else if(e.getSource() == RefreshButton){
-            Refresh();
+            openOptimisation();
+        } else if (e.getSource() == openHomeButton) {
+            openHome();
+        } else if (e.getSource() == RefreshButton) {
+            refresh();
         }
     }
 
-    private void OpenMonitoring() {
+    private void openMonitoring() {
         try {
             monitoring = new JPanel();
             monitoring.setLayout(new FlowLayout());
 
             JPanel MonitoringInfo = new JPanel();
-            MonitoringInfo.setLayout(new GridLayout(6,1));
+            MonitoringInfo.setLayout(new GridLayout(6, 1));
             RefreshButton = new JButton("Refresh");
             JLabel InfoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
             JLabel InfoAvailability = new JLabel("Availability: " + MonitoringScroll.getAvailability());
@@ -239,9 +237,8 @@ public class Frame extends JFrame implements ActionListener {
             InfoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 30));
 
 
-            String categories[] = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall" };
+            String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
             imageMap = createImageMap(categories);
-
 
 
             JList list = new JList(categories);
@@ -257,7 +254,6 @@ public class Frame extends JFrame implements ActionListener {
             bottomPanel.setVisible(false);
             netWorkDrawing.setVisible(false);
             optimisation.setVisible(false);
-
 
 
             setVisible(true);
@@ -282,7 +278,7 @@ public class Frame extends JFrame implements ActionListener {
         return map;
     }
 
-    private void OpenOptimisation() {
+    private void openOptimisation() {
         try {
             optimisation = new JPanel();
             optimisation.setLayout(new FlowLayout());
@@ -298,12 +294,9 @@ public class Frame extends JFrame implements ActionListener {
         }
     }
 
-    private void Refresh(){
-        try{
-            String[] command =
-                    {
-                            "cmd",
-                    };
+    private void refresh() {
+        try {
+            String[] command = {"cmd",};
             Process p = Runtime.getRuntime().exec(command);
             new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
             new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
@@ -312,31 +305,28 @@ public class Frame extends JFrame implements ActionListener {
             stdin.close();
             int returnCode = p.waitFor();
             System.out.println("Return code = " + returnCode);
-        }catch(Exception e){
+        } catch (Exception e) {
             return;
         }
     }
 
-
-
-    private void OpenHome(){
-        try{
+    private void openHome() {
+        try {
             bottomPanel.setVisible(true);
             netWorkDrawing.setVisible(true);
             monitoring.setVisible(false);
             optimisation.setVisible(false);
-        }catch(Exception e){
+        } catch (Exception e) {
             return;
         }
     }
 
-    public static void setUIFont (javax.swing.plaf.FontUIResource f){
+    public static void setUIFont(javax.swing.plaf.FontUIResource f) {
         java.util.Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
-            Object value = UIManager.get (key);
-            if (value instanceof javax.swing.plaf.FontUIResource)
-                UIManager.put (key, f);
+            Object value = UIManager.get(key);
+            if (value instanceof javax.swing.plaf.FontUIResource) UIManager.put(key, f);
         }
     }
 
