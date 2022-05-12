@@ -207,6 +207,7 @@ public class Frame extends JFrame implements ActionListener {
         }
     }
 
+    //region monitoring screen
     private void openMonitoring() {
         try {
             monitoring = new JPanel();
@@ -277,7 +278,9 @@ public class Frame extends JFrame implements ActionListener {
         }
         return map;
     }
+    //endregion
 
+    //region optimisation screen
     private void openOptimisation() {
         try {
             optimisation = new JPanel();
@@ -293,7 +296,9 @@ public class Frame extends JFrame implements ActionListener {
             return;
         }
     }
+    //endregion
 
+    //region refresh button function
     private void refresh() {
         try {
             String[] command = {"cmd",};
@@ -309,7 +314,9 @@ public class Frame extends JFrame implements ActionListener {
             return;
         }
     }
+    //endregion
 
+    //region home button
     private void openHome() {
         try {
             bottomPanel.setVisible(true);
@@ -320,7 +327,9 @@ public class Frame extends JFrame implements ActionListener {
             return;
         }
     }
+    //endregion
 
+    //region set universal fontsize
     public static void setUIFont(javax.swing.plaf.FontUIResource f) {
         java.util.Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
@@ -329,6 +338,7 @@ public class Frame extends JFrame implements ActionListener {
             if (value instanceof javax.swing.plaf.FontUIResource) UIManager.put(key, f);
         }
     }
+    //endregion
 
 
     private void CreateComponent() {
