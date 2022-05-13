@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.awt.Toolkit.getDefaultToolkit;
+import static java.lang.Runtime.getRuntime;
 
 public class Frame extends JFrame implements ActionListener {
 
@@ -57,6 +58,8 @@ public class Frame extends JFrame implements ActionListener {
 
     private JScrollPane componentBar;
     private final JPanel componentList;
+
+    JLabel infoDisk;
     //endregion
 
     public Frame() {
@@ -212,29 +215,29 @@ public class Frame extends JFrame implements ActionListener {
             monitoring = new JPanel();
             monitoring.setLayout(new FlowLayout());
 
-            JPanel MonitoringInfo = new JPanel();
-            MonitoringInfo.setLayout(new GridLayout(6, 1));
+            JPanel monitoringInfo = new JPanel();
+            monitoringInfo.setLayout(new GridLayout(6, 1));
             RefreshButton = new JButton("Refresh");
-            JLabel InfoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
-            JLabel InfoAvailability = new JLabel("Availability: " + MonitoringScroll.getAvailability());
-            JLabel InfoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
-            JLabel InfoProcessing = new JLabel("Processing Power Used: " + MonitoringScroll.getProcessing());
-            JLabel InfoDisk = new JLabel("Disk Usage: " + MonitoringScroll.getDiskUsage());
+            JLabel infoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
+            JLabel infoAvailability = new JLabel("Availability: " + MonitoringScroll.getAvailability());
+            JLabel infoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
+            JLabel infoProcessing = new JLabel("Processing Power Used: " + MonitoringScroll.getProcessing());
+            infoDisk = new JLabel("Disk Usage: " + MonitoringScroll.getDiskUsage());
 
-            MonitoringInfo.add(InfoName);
-            MonitoringInfo.add(InfoAvailability);
-            MonitoringInfo.add(InfoTimeAvailabality);
-            MonitoringInfo.add(InfoProcessing);
-            MonitoringInfo.add(InfoDisk);
-            MonitoringInfo.add(RefreshButton);
+            monitoringInfo.add(infoName);
+            monitoringInfo.add(infoAvailability);
+            monitoringInfo.add(infoTimeAvailabality);
+            monitoringInfo.add(infoProcessing);
+            monitoringInfo.add(infoDisk);
+            monitoringInfo.add(RefreshButton);
             RefreshButton.addActionListener(this);
 
             RefreshButton.setFont(new Font("Robota", Font.PLAIN, 30));
-            InfoName.setFont(new Font("Robota", Font.PLAIN, 30));
-            InfoAvailability.setFont(new Font("Robota", Font.PLAIN, 30));
-            InfoDisk.setFont(new Font("Robota", Font.PLAIN, 30));
-            InfoProcessing.setFont(new Font("Robota", Font.PLAIN, 30));
-            InfoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 30));
+            infoName.setFont(new Font("Robota", Font.PLAIN, 30));
+            infoAvailability.setFont(new Font("Robota", Font.PLAIN, 30));
+            infoDisk.setFont(new Font("Robota", Font.PLAIN, 30));
+            infoProcessing.setFont(new Font("Robota", Font.PLAIN, 30));
+            infoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 30));
 
 
             String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
@@ -248,7 +251,7 @@ public class Frame extends JFrame implements ActionListener {
 
             setVisible(true);
             //monitoring.add(MonitoringBar);
-            monitoring.add(MonitoringInfo);
+            monitoring.add(monitoringInfo);
             getContentPane().add(scrollpane, BorderLayout.WEST);
             getContentPane().add(monitoring, BorderLayout.CENTER);
             bottomPanel.setVisible(false);
@@ -290,24 +293,38 @@ public class Frame extends JFrame implements ActionListener {
             netWorkDrawing.setVisible(false);
             monitoring.setVisible(false);
         } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
     }
 
     private void refresh() {
+        String host = "192.168.1.101";
+        String command = "df -H";
         try {
-            String[] command = {"cmd",};
-            Process p = Runtime.getRuntime().exec(command);
-            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
-            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
-            PrintWriter stdin = new PrintWriter(p.getOutputStream());
-            stdin.println("ssh -tt 145.44.233.80");
-            stdin.close();
-            int returnCode = p.waitFor();
-            System.out.println("Return code = " + returnCode);
-        } catch (Exception e) {
-            return;
+            Process proc = getRuntime().exec(new String[]{"ssh", host, command});
+            String data = read(proc.getInputStream());
+            System.out.print(data + "\n");
+            if (proc.waitFor() != 0) {
+                read(proc.getErrorStream());
+                System.err.print(data + "\n");
+            }
+            infoDisk.setText(data);
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    private String read(InputStream inputStream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+        StringBuilder result = new StringBuilder();
+        while (true) {
+            String line;
+            if ((line = reader.readLine()) == null) break;
+            result.append(line).append('\n');
+        }
+        return result.toString();
     }
 
     private void openHome() {
