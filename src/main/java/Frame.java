@@ -35,10 +35,12 @@ public class Frame extends JFrame implements ActionListener {
 
     //region JUIcomponents
     private final JButton addNewComponentButton;
+    private final JButton optimizeButton;
     private final JButton RefreshButton;
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
+    private final JTextField uptimeField;
 
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
@@ -109,6 +111,12 @@ public class Frame extends JFrame implements ActionListener {
         typeComboBox = new JComboBox<>(ComponentType.values());
         addNewComponentButton = new JButton("Add");
         addNewComponentButton.addActionListener(this);
+        JLabel uptimeLabel = new JLabel("Availability");
+        uptimeField = new JTextField(5);
+        setNumbersOnly(availabilityField, true);
+        uptimeField.setText("0.9");
+        optimizeButton = new JButton("Optimize");
+        optimizeButton.addActionListener(this::optimize);
         newComponentPanel.add(newComponentLabel);
         newComponentPanel.add(nameField);
         newComponentPanel.add(priceLabel);
@@ -117,6 +125,10 @@ public class Frame extends JFrame implements ActionListener {
         newComponentPanel.add(availabilityField);
         newComponentPanel.add(typeComboBox);
         newComponentPanel.add(addNewComponentButton);
+        newComponentPanel.add(uptimeLabel);
+        newComponentPanel.add(uptimeField);
+        newComponentPanel.add(optimizeButton);
+
 
         JPanel statsPanel = new JPanel();
         JLabel totalPriceLabel = new JLabel("Price:");
@@ -202,6 +214,16 @@ public class Frame extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
 
         setVisible(true);
+    }
+
+    private void optimize(ActionEvent actionEvent) {
+        try {
+            double requiredUptime = Double.parseDouble(uptimeField.getText());
+            network = new Optimize().calculateCheapest(network, requiredUptime);
+            RegenerateNetworkDrawing();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     private void changeSelectedComponent(JButton button, InfrastructureComponent component) {
