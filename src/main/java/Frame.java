@@ -13,14 +13,10 @@ import java.awt.event.KeyEvent;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.WEST;
-import static java.awt.Color.BLUE;
-import static java.awt.Color.DARK_GRAY;
+import static java.awt.BorderLayout.*;
 import static java.awt.Toolkit.getDefaultToolkit;
 import static java.lang.Runtime.getRuntime;
 import static java.math.RoundingMode.CEILING;
@@ -36,7 +32,7 @@ public class Frame extends JFrame implements ActionListener {
     //region JUIcomponents
     private final JButton addNewComponentButton;
     private final JButton optimizeButton;
-    private final JButton RefreshButton;
+    private final JButton refreshButton;
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
@@ -53,9 +49,9 @@ public class Frame extends JFrame implements ActionListener {
 
     private final JPanel netWorkDrawing;
     private final JPanel bottomPanel;
-    private final JPanel monitoring;
+//    private final JPanel monitoring;
 
-    private final JScrollPane scrollpane;
+//    private final JScrollPane scrollpane;
 
     public static Map<String, ImageIcon> imageMap = null;
 
@@ -74,7 +70,7 @@ public class Frame extends JFrame implements ActionListener {
         setTitle("NG Network-Application");
         setSize(650, 450);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUIFont(new javax.swing.plaf.FontUIResource("Roboto", Font.PLAIN, 15));
+//        setUIFont(new javax.swing.plaf.FontUIResource("Roboto", Font.PLAIN, 15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //endregion
 
@@ -114,7 +110,7 @@ public class Frame extends JFrame implements ActionListener {
         JLabel uptimeLabel = new JLabel("Availability");
         uptimeField = new JTextField(5);
         setNumbersOnly(availabilityField, true);
-        uptimeField.setText("0.9");
+        uptimeField.setText("90");
         optimizeButton = new JButton("Optimize");
         optimizeButton.addActionListener(this::optimize);
         newComponentPanel.add(newComponentLabel);
@@ -147,69 +143,38 @@ public class Frame extends JFrame implements ActionListener {
         netWorkDrawing = new JPanel();
         netWorkDrawing.setLayout(null);
 
-        JPanel componentsPanel = createComponentPanel((b, c) -> prefillComponent(c));
-        networkTab.add(WEST, new JScrollPane(componentsPanel));
-        networkTab.add(CENTER, netWorkDrawing);
-        networkTab.add(BorderLayout.SOUTH, bottomPanel);
-        //endregion
-
-        //region MonitoringTab
-        JPanel monitoringTab = new JPanel();
-        monitoringTab.setLayout(new BorderLayout());
-
-        monitoring = new JPanel();
+        JPanel monitoring = new JPanel();
         monitoring.setLayout(new FlowLayout());
 
-        JPanel monitoringInfo = createPanel(6);
-        RefreshButton = new JButton("Refresh");
+        JPanel monitoringInfo = new JPanel();
+        monitoringInfo.setLayout(new GridLayout(6, 1));
+
         JLabel infoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
         JLabel infoAvailability = new JLabel("Availability: " + MonitoringScroll.getAvailability());
         JLabel infoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
         JLabel infoProcessing = new JLabel("Processing Power Used: " + MonitoringScroll.getProcessing());
         infoDisk = new JLabel("Disk Usage: " + MonitoringScroll.getDiskUsage());
+        refreshButton = new JButton("Refresh");
 
         monitoringInfo.add(infoName);
         monitoringInfo.add(infoAvailability);
         monitoringInfo.add(infoTimeAvailabality);
         monitoringInfo.add(infoProcessing);
         monitoringInfo.add(infoDisk);
-        monitoringInfo.add(RefreshButton);
-        RefreshButton.addActionListener(this);
+        monitoringInfo.add(refreshButton);
+        refreshButton.addActionListener(this);
 
-        RefreshButton.setFont(new Font("Robota", Font.PLAIN, 30));
-        infoName.setFont(new Font("Robota", Font.PLAIN, 30));
-        infoAvailability.setFont(new Font("Robota", Font.PLAIN, 30));
-        infoDisk.setFont(new Font("Robota", Font.PLAIN, 30));
-        infoProcessing.setFont(new Font("Robota", Font.PLAIN, 30));
-        infoTimeAvailabality.setFont(new Font("Robota", Font.PLAIN, 30));
-
-
-        String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
-        imageMap = createImageMap(categories);
-
-        JList list = new JList(categories);
-        list.setCellRenderer(new ListRenderer());
-        scrollpane = new JScrollPane(list);
-
-        //monitoring.add(MonitoringBar);
         monitoring.add(monitoringInfo);
-        monitoringTab.add(scrollpane, WEST);
-        monitoringTab.add(monitoring, CENTER);
-        //endregion
 
-        //region OptimizeTab
-        JPanel optimizeTab = new JPanel();
-        optimizeTab.setLayout(new BorderLayout());
-        optimizeTab.add(WEST, createComponentPanel(this::changeSelectedComponent));
+        JPanel componentsPanel = createComponentPanel((b, c) -> prefillComponent(c));
+        networkTab.add(WEST, new JScrollPane(componentsPanel));
+        networkTab.add(CENTER, netWorkDrawing);
+        networkTab.add(SOUTH, bottomPanel);
+        networkTab.add(EAST, monitoringInfo);
         //endregion
-
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Design", networkTab);
-        tabs.addTab("Monitor", monitoringTab);
-        tabs.addTab("Optimize", optimizeTab);
 
         getContentPane().add(BorderLayout.NORTH, menuBar);
-        getContentPane().add(tabs);
+        getContentPane().add(networkTab);
 
         setLocationRelativeTo(null);
 
@@ -223,15 +188,6 @@ public class Frame extends JFrame implements ActionListener {
             RegenerateNetworkDrawing();
         } catch (NumberFormatException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void changeSelectedComponent(JButton button, InfrastructureComponent component) {
-        if (selectedComponents.remove(component)) {
-            button.setBackground(DARK_GRAY);
-        } else {
-            selectedComponents.add(component);
-            button.setBackground(BLUE);
         }
     }
 
@@ -290,31 +246,19 @@ public class Frame extends JFrame implements ActionListener {
             openFile();
         } else if (e.getSource() == saveFileButton) {
             saveToFile();
-        } else if (e.getSource() == RefreshButton) {
+        } else if (e.getSource() == refreshButton) {
             refresh();
         }
     }
 
-    private Map<String, ImageIcon> createImageMap(String[] list) {
-        Map<String, ImageIcon> map = new HashMap<>();
-        try {
-            map.put("Database Server 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/databaseservericon.png"))));
-            map.put("Database Server 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/databaseservericon.png"))));
-            map.put("Webserver 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/webservericon.png"))));
-            map.put("Webserver 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/webservericon.png"))));
-            map.put("Firewall", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("/firewallicon.png"))));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return map;
-    }
-
     private void refresh() {
+        System.out.println("Starting Command");
         String host = "192.168.1.101";
         String command = "df -H";
         try {
             Process proc = getRuntime().exec(new String[]{"ssh", host, command});
             String data = read(proc.getInputStream());
+            System.out.println("Command Tried1");
             System.out.print(data + "\n");
             if (proc.waitFor() != 0) {
                 read(proc.getErrorStream());
@@ -324,6 +268,8 @@ public class Frame extends JFrame implements ActionListener {
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Command Tried");
+        refreshButton.setText("Refresh");
     }
 
     private String read(InputStream inputStream) throws IOException {
@@ -347,7 +293,6 @@ public class Frame extends JFrame implements ActionListener {
         }
     }
 
-
     private void createComponent() {
         try {
             double price = Double.parseDouble(priceField.getText());
@@ -364,7 +309,6 @@ public class Frame extends JFrame implements ActionListener {
         }
         RegenerateNetworkDrawing();
     }
-
 
     private void openFile() {
         //from https://stackoverflow.com/questions/40255039/how-to-choose-file-in-java
