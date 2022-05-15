@@ -30,6 +30,9 @@ public class Frame extends JFrame implements ActionListener {
     private Network network = new Network();
 
     //region JUIcomponents
+    private final Color darkerUIColor = new Color(40, 40, 40);
+    private final Color errorColor = new Color(237, 67, 55);
+
     private final JButton addNewComponentButton;
     private final JButton optimizeButton;
     private final JButton refreshButton;
@@ -37,6 +40,7 @@ public class Frame extends JFrame implements ActionListener {
     private final JTextField priceField;
     private final JTextField availabilityField;
     private final JTextField uptimeField;
+    private final JLabel optimizeErrorLabel;
 
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
@@ -94,6 +98,7 @@ public class Frame extends JFrame implements ActionListener {
         networkTab.setLayout(new BorderLayout());
 
         bottomPanel = new JPanel();
+        bottomPanel.setBackground(darkerUIColor);
 
         JPanel newComponentPanel = new JPanel();
         JLabel newComponentLabel = new JLabel("New Component");
@@ -113,6 +118,8 @@ public class Frame extends JFrame implements ActionListener {
         uptimeField.setText("90");
         optimizeButton = new JButton("Optimize");
         optimizeButton.addActionListener(this::optimize);
+        optimizeErrorLabel = new JLabel("");
+
         newComponentPanel.add(newComponentLabel);
         newComponentPanel.add(nameField);
         newComponentPanel.add(priceLabel);
@@ -124,7 +131,7 @@ public class Frame extends JFrame implements ActionListener {
         newComponentPanel.add(uptimeLabel);
         newComponentPanel.add(uptimeField);
         newComponentPanel.add(optimizeButton);
-
+        newComponentPanel.add(optimizeErrorLabel);
 
         JPanel statsPanel = new JPanel();
         JLabel totalPriceLabel = new JLabel("Price:");
@@ -145,6 +152,7 @@ public class Frame extends JFrame implements ActionListener {
 
         JPanel monitoring = new JPanel();
         monitoring.setLayout(new FlowLayout());
+        monitoring.setBackground(darkerUIColor);
 
         JPanel monitoringInfo = new JPanel();
         monitoringInfo.setLayout(new GridLayout(6, 1));
@@ -167,6 +175,8 @@ public class Frame extends JFrame implements ActionListener {
         monitoring.add(monitoringInfo);
 
         JPanel componentsPanel = createComponentPanel((b, c) -> prefillComponent(c));
+        componentsPanel.setBackground(darkerUIColor);
+
         networkTab.add(WEST, new JScrollPane(componentsPanel));
         networkTab.add(CENTER, netWorkDrawing);
         networkTab.add(SOUTH, bottomPanel);
@@ -184,11 +194,40 @@ public class Frame extends JFrame implements ActionListener {
     private void optimize(ActionEvent actionEvent) {
         try {
             double requiredUptime = Double.parseDouble(uptimeField.getText());
-            network = new Optimize().calculateCheapest(network, requiredUptime);
-            RegenerateNetworkDrawing();
+            if (requiredUptime > 99.9999999d) {
+                setOptimizeError("Impossible uptime");
+                return;
+            }
+            if (network == null || network.getAllComponentsCopy().isEmpty()) {
+                setOptimizeError("Network is empty");
+                return;
+            }
+            if (network.getWebServerComponents().isEmpty() || network.getDatabaseServerComponents().isEmpty() || network.getFirewallComponents().isEmpty()) {
+                setOptimizeError("Not all types of components added");
+                return;
+            }
+            optimizeButton.setText("Optimizing...");
+            optimizeButton.setEnabled(false);
+
+            Thread thread = new Thread(() -> {
+                System.out.println("Optimizing started");
+                network = new Optimize().calculateCheapest(network, requiredUptime);
+                optimizeButton.setText("Optimize");
+                optimizeButton.setEnabled(true);
+                RegenerateNetworkDrawing();
+                System.out.println("Optimizing finished: " + network);
+            });
+
+            thread.start();
+            setOptimizeError("");
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setOptimizeError(String error) {
+        optimizeErrorLabel.setText(error);
+        optimizeErrorLabel.setForeground(errorColor);
     }
 
     private JPanel createComponentPanel(BiConsumer<JButton, InfrastructureComponent> buttonFunction) {
@@ -252,24 +291,32 @@ public class Frame extends JFrame implements ActionListener {
     }
 
     private void refresh() {
-        System.out.println("Starting Command");
-        String host = "192.168.1.101";
-        String command = "df -H";
-        try {
-            Process proc = getRuntime().exec(new String[]{"ssh", host, command});
-            String data = read(proc.getInputStream());
-            System.out.println("Command Tried1");
-            System.out.print(data + "\n");
-            if (proc.waitFor() != 0) {
-                read(proc.getErrorStream());
-                System.err.print(data + "\n");
+        refreshButton.setText("Refreshing...");
+        refreshButton.setEnabled(false);
+        //Start a new thread, so the application doesn't freeze
+        Thread thread = new Thread(() -> {
+            System.out.println("Starting Command");
+            String host = "192.168.1.101";
+            String command = "df -H";
+            try {
+                Process proc = getRuntime().exec(new String[]{"ssh", host, command});
+                String data = read(proc.getInputStream());
+                System.out.println("Command Tried1");
+                System.out.print(data + "\n");
+                if (proc.waitFor() != 0) {
+                    read(proc.getErrorStream());
+                    System.err.print(data + "\n");
+                }
+                infoDisk.setText(data);
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
             }
-            infoDisk.setText(data);
-        } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Command Tried");
-        refreshButton.setText("Refresh");
+            System.out.println("Command Tried");
+            refreshButton.setText("Refresh");
+            refreshButton.setEnabled(true);
+        });
+
+        thread.start();
     }
 
     private String read(InputStream inputStream) throws IOException {
@@ -298,6 +345,10 @@ public class Frame extends JFrame implements ActionListener {
             double price = Double.parseDouble(priceField.getText());
             double availability = Double.parseDouble(availabilityField.getText());
             ComponentType selectedType = (ComponentType) typeComboBox.getSelectedItem();
+            if (network == null) {
+                network = new Network();
+            }
+
             if (network.getAllComponentsCopy().stream().anyMatch(c -> nameField.getText().equals(c.getComponentName()))) {
                 throw new IllegalArgumentException("Component already exist with name: " + nameField.getText());
             }
