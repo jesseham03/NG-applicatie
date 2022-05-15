@@ -38,6 +38,12 @@ public class DraggableComponent extends JComponent {
                     repaint();
                 }
             }
+
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                System.out.println("Clicked on: " + component);
+//                Frame.frame.showDetails(component);
+//            }
         });
     }
 

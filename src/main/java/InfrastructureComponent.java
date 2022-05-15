@@ -14,6 +14,8 @@ public class InfrastructureComponent {
     private double costInEuros;
     private double availability;
     private ComponentType type;
+    @Builder.Default
+    private String ipAddress = "127.0.0.1";
 
     private Point location;
 

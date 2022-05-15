@@ -1,0 +1,80 @@
+{
+  "webServerComponents": [
+    {
+      "componentName": "Webserver1",
+      "costInEuros": 2200.0,
+      "availability": 80,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "Webserver2",
+      "costInEuros": 3200.0,
+      "availability": 90,
+      "type": "Web",
+      "location": null
+    }
+  ],
+  "databaseServerComponents": [
+    {
+      "componentName": "Database1",
+      "costInEuros": 5100.0,
+      "availability": 90,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "Database2",
+      "costInEuros": 7700.0,
+      "availability": 95,
+      "type": "Database",
+      "location": null
+    }
+  ],
+  "firewallComponents": [
+    {
+      "componentName": "pfSense",
+      "costInEuros": 4000.0,
+      "availability": 99.998,
+      "type": "Firewall",
+      "location": null
+    }
+  ],
+  "allComponentsCopy": [
+    {
+      "componentName": "Webserver1",
+      "costInEuros": 2200.0,
+      "availability": 80,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "Webserver2",
+      "costInEuros": 3200.0,
+      "availability": 90,
+      "type": "Web",
+      "location": null
+    },
+    {
+      "componentName": "Database1",
+      "costInEuros": 5100.0,
+      "availability": 90,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "Database2",
+      "costInEuros": 7700.0,
+      "availability": 95,
+      "type": "Database",
+      "location": null
+    },
+    {
+      "componentName": "pfSense",
+      "costInEuros": 4000.0,
+      "availability": 99.998,
+      "type": "Firewall",
+      "location": null
+    }
+  ]
+}

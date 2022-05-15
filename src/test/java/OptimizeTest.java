@@ -30,9 +30,9 @@ public class OptimizeTest {
     }
 
     private Network addEachComponentType(Network network) {
-        network.addComponent(new InfrastructureComponent("firewall1", 1, 99d, ComponentType.Firewall, null));
-        network.addComponent(new InfrastructureComponent("db1", 1, 99d, ComponentType.Database, null));
-        network.addComponent(new InfrastructureComponent("web1", 1, 99d, ComponentType.Web, null));
+        network.addComponent(new InfrastructureComponent("firewall1", 1, 99d, ComponentType.Firewall, null, null));
+        network.addComponent(new InfrastructureComponent("db1", 1, 99d, ComponentType.Database, null, null));
+        network.addComponent(new InfrastructureComponent("web1", 1, 99d, ComponentType.Web, null, null));
         return network;
     }
 

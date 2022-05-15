@@ -6,14 +6,11 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.BiConsumer;
 
 import static java.awt.BorderLayout.*;
@@ -23,9 +20,19 @@ import static java.math.RoundingMode.CEILING;
 
 public class Frame extends JFrame implements ActionListener {
 
+    public static Frame frame;
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final ObjectWriter OBJECT_WRITER = OBJECT_MAPPER.writer().withDefaultPrettyPrinter();
     private static final ObjectReader OBJECT_READER = OBJECT_MAPPER.reader();
+    private final JLabel monitoringName;
+    private final JLabel monitoringAvailability;
+    private final JLabel monitoringUptime;
+    private final JLabel monitoringCpu;
+    private final JLabel monitoringDisk;
+    private final JLabel monitoringPrice;
+    private final JLabel monitoringLastUpdate;
+    private final JTextField ipAddressField;
 
     private Network network = new Network();
 
@@ -40,7 +47,7 @@ public class Frame extends JFrame implements ActionListener {
     private final JTextField priceField;
     private final JTextField availabilityField;
     private final JTextField uptimeField;
-    private final JLabel optimizeErrorLabel;
+    private final JLabel errorLabel;
 
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
@@ -52,18 +59,10 @@ public class Frame extends JFrame implements ActionListener {
     private final JComboBox<ComponentType> typeComboBox;
 
     private final JPanel netWorkDrawing;
-    private final JPanel bottomPanel;
-//    private final JPanel monitoring;
-
-//    private final JScrollPane scrollpane;
-
-    public static Map<String, ImageIcon> imageMap = null;
-
-    JLabel infoDisk;
-    private final java.util.List<InfrastructureComponent> selectedComponents = new ArrayList<>();
     //endregion
 
     public Frame() {
+        frame = this;
         //region Frame setup
         try {
             com.formdev.flatlaf.FlatDarculaLaf.setup();
@@ -97,43 +96,44 @@ public class Frame extends JFrame implements ActionListener {
         JPanel networkTab = new JPanel();
         networkTab.setLayout(new BorderLayout());
 
-        bottomPanel = new JPanel();
+        JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(darkerUIColor);
 
         JPanel newComponentPanel = new JPanel();
-        JLabel newComponentLabel = new JLabel("New Component");
+        newComponentPanel.setBackground(darkerUIColor);
         nameField = new JTextField(15);
-        JLabel priceLabel = new JLabel("Price");
+        ipAddressField = new JTextField(5);
         priceField = new JTextField(5);
         setNumbersOnly(priceField, true);
-        JLabel availabilityLabel = new JLabel("Availability");
         availabilityField = new JTextField(5);
         setNumbersOnly(availabilityField, true);
         typeComboBox = new JComboBox<>(ComponentType.values());
         addNewComponentButton = new JButton("Add");
         addNewComponentButton.addActionListener(this);
-        JLabel uptimeLabel = new JLabel("Availability");
         uptimeField = new JTextField(5);
         setNumbersOnly(availabilityField, true);
         uptimeField.setText("90");
         optimizeButton = new JButton("Optimize");
         optimizeButton.addActionListener(this::optimize);
-        optimizeErrorLabel = new JLabel("");
+        errorLabel = new JLabel("");
 
-        newComponentPanel.add(newComponentLabel);
+        newComponentPanel.add(new JLabel("Name"));
         newComponentPanel.add(nameField);
-        newComponentPanel.add(priceLabel);
+        newComponentPanel.add(new JLabel("Ip address"));
+        newComponentPanel.add(ipAddressField);
+        newComponentPanel.add(new JLabel("Price"));
         newComponentPanel.add(priceField);
-        newComponentPanel.add(availabilityLabel);
+        newComponentPanel.add(new JLabel("Availability"));
         newComponentPanel.add(availabilityField);
         newComponentPanel.add(typeComboBox);
         newComponentPanel.add(addNewComponentButton);
-        newComponentPanel.add(uptimeLabel);
+        newComponentPanel.add(new JLabel("Availability"));
         newComponentPanel.add(uptimeField);
         newComponentPanel.add(optimizeButton);
-        newComponentPanel.add(optimizeErrorLabel);
+        newComponentPanel.add(errorLabel);
 
         JPanel statsPanel = new JPanel();
+        statsPanel.setBackground(darkerUIColor);
         JLabel totalPriceLabel = new JLabel("Price:");
         totalPriceLabelValue = new JLabel("0");
         JLabel totalAvailabilityLabel = new JLabel("Availability:");
@@ -155,20 +155,39 @@ public class Frame extends JFrame implements ActionListener {
         monitoring.setBackground(darkerUIColor);
 
         JPanel monitoringInfo = new JPanel();
-        monitoringInfo.setLayout(new GridLayout(6, 1));
+        monitoringInfo.setLayout(new GridLayout(8, 2));
+        monitoringInfo.setBackground(darkerUIColor);
 
-        JLabel infoName = new JLabel("Server Name: " + MonitoringScroll.getComponentName());
-        JLabel infoAvailability = new JLabel("Availability: " + MonitoringScroll.getAvailability());
-        JLabel infoTimeAvailabality = new JLabel("Uptime: " + MonitoringScroll.getUptime());
-        JLabel infoProcessing = new JLabel("Processing Power Used: " + MonitoringScroll.getProcessing());
-        infoDisk = new JLabel("Disk Usage: " + MonitoringScroll.getDiskUsage());
+
+        monitoringInfo.add(new JLabel("Name: "));
+        monitoringName = new JLabel("");
+        monitoringInfo.add(monitoringName);
+
+        monitoringInfo.add(new JLabel("Availability: "));
+        monitoringAvailability = new JLabel("");
+        monitoringInfo.add(monitoringAvailability);
+
+        monitoringInfo.add(new JLabel("Price: "));
+        monitoringPrice = new JLabel("");
+        monitoringInfo.add(monitoringPrice);
+
+        monitoringInfo.add(new JLabel("Uptime: "));
+        monitoringUptime = new JLabel("");
+        monitoringInfo.add(monitoringUptime);
+
+        monitoringInfo.add(new JLabel("Cpu usage: "));
+        monitoringCpu = new JLabel("");
+        monitoringInfo.add(monitoringCpu);
+
+        monitoringInfo.add(new JLabel("Disk usage: "));
+        monitoringDisk = new JLabel("");
+        monitoringInfo.add(monitoringDisk);
+
+        monitoringInfo.add(new JLabel("Last updated: "));
+        monitoringLastUpdate = new JLabel("");
+        monitoringInfo.add(monitoringLastUpdate);
+
         refreshButton = new JButton("Refresh");
-
-        monitoringInfo.add(infoName);
-        monitoringInfo.add(infoAvailability);
-        monitoringInfo.add(infoTimeAvailabality);
-        monitoringInfo.add(infoProcessing);
-        monitoringInfo.add(infoDisk);
         monitoringInfo.add(refreshButton);
         refreshButton.addActionListener(this);
 
@@ -180,7 +199,7 @@ public class Frame extends JFrame implements ActionListener {
         networkTab.add(WEST, new JScrollPane(componentsPanel));
         networkTab.add(CENTER, netWorkDrawing);
         networkTab.add(SOUTH, bottomPanel);
-        networkTab.add(EAST, monitoringInfo);
+        networkTab.add(EAST, monitoring);
         //endregion
 
         getContentPane().add(BorderLayout.NORTH, menuBar);
@@ -195,15 +214,15 @@ public class Frame extends JFrame implements ActionListener {
         try {
             double requiredUptime = Double.parseDouble(uptimeField.getText());
             if (requiredUptime > 99.9999999d) {
-                setOptimizeError("Impossible uptime");
+                setError("Impossible uptime");
                 return;
             }
             if (network == null || network.getAllComponentsCopy().isEmpty()) {
-                setOptimizeError("Network is empty");
+                setError("Network is empty");
                 return;
             }
             if (network.getWebServerComponents().isEmpty() || network.getDatabaseServerComponents().isEmpty() || network.getFirewallComponents().isEmpty()) {
-                setOptimizeError("Not all types of components added");
+                setError("Not all types of components added");
                 return;
             }
             optimizeButton.setText("Optimizing...");
@@ -219,15 +238,15 @@ public class Frame extends JFrame implements ActionListener {
             });
 
             thread.start();
-            setOptimizeError("");
+            setError("");
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
     }
 
-    private void setOptimizeError(String error) {
-        optimizeErrorLabel.setText(error);
-        optimizeErrorLabel.setForeground(errorColor);
+    private void setError(String error) {
+        errorLabel.setText(error);
+        errorLabel.setForeground(errorColor);
     }
 
     private JPanel createComponentPanel(BiConsumer<JButton, InfrastructureComponent> buttonFunction) {
@@ -307,7 +326,7 @@ public class Frame extends JFrame implements ActionListener {
                     read(proc.getErrorStream());
                     System.err.print(data + "\n");
                 }
-                infoDisk.setText(data);
+                //TODO: Opgehaalde data tonen
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
@@ -331,15 +350,6 @@ public class Frame extends JFrame implements ActionListener {
         return result.toString();
     }
 
-    public static void setUIFont(javax.swing.plaf.FontUIResource f) {
-        java.util.Enumeration keys = UIManager.getDefaults().keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value instanceof javax.swing.plaf.FontUIResource) UIManager.put(key, f);
-        }
-    }
-
     private void createComponent() {
         try {
             double price = Double.parseDouble(priceField.getText());
@@ -350,9 +360,11 @@ public class Frame extends JFrame implements ActionListener {
             }
 
             if (network.getAllComponentsCopy().stream().anyMatch(c -> nameField.getText().equals(c.getComponentName()))) {
-                throw new IllegalArgumentException("Component already exist with name: " + nameField.getText());
+                setError("Component already exist with name: " + nameField.getText());
+//                throw new IllegalArgumentException("Component already exist with name: " + nameField.getText());
+                return;
             }
-            InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType, null);
+            InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType, ipAddressField.getText(), null);
             network.addComponent(addedComponent);
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
@@ -418,6 +430,12 @@ public class Frame extends JFrame implements ActionListener {
             visualComponent.setLocation(addedComponent.getLocation());
         }
         visualComponent.setSize(size, size);
+        visualComponent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showDetails(addedComponent);
+            }
+        });
         netWorkDrawing.repaint();
     }
 
@@ -426,7 +444,7 @@ public class Frame extends JFrame implements ActionListener {
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
         File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" + System.getProperty("file.separator") + "NerdygadgetsFiles");
         //If the directory does not exist, make it
-        boolean result = saveDirectory.mkdir();
+        saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
 
         //Save as Json
@@ -466,5 +484,16 @@ public class Frame extends JFrame implements ActionListener {
 //            }
 //        }
         //endregion
+    }
+
+    public void showDetails(InfrastructureComponent component) {
+        monitoringName.setText(component.getComponentName());
+        monitoringAvailability.setText(String.valueOf(component.getAvailability()));
+        monitoringPrice.setText(String.valueOf(component.getCostInEuros()));
+        monitoringUptime.setText("No uptime info yet");
+        monitoringCpu.setText("No cpu info yet");
+        monitoringDisk.setText("No disk info yet");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        monitoringLastUpdate.setText(dtf.format(LocalDateTime.now()));
     }
 }
