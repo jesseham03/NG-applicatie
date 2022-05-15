@@ -16,6 +16,7 @@ import java.util.function.BiConsumer;
 import static java.awt.BorderLayout.*;
 import static java.awt.Toolkit.getDefaultToolkit;
 import static java.lang.Runtime.getRuntime;
+import static java.lang.Thread.sleep;
 import static java.math.RoundingMode.CEILING;
 
 public class Frame extends JFrame implements ActionListener {
@@ -32,7 +33,10 @@ public class Frame extends JFrame implements ActionListener {
     private final JLabel monitoringDisk;
     private final JLabel monitoringPrice;
     private final JLabel monitoringLastUpdate;
-    private final JTextField ipAddressField;
+    private final JTextField hostnameField;
+    private final JLabel monitoringHost;
+
+    private InfrastructureComponent monitoredComponent;
 
     private Network network = new Network();
 
@@ -59,6 +63,9 @@ public class Frame extends JFrame implements ActionListener {
     private final JComboBox<ComponentType> typeComboBox;
 
     private final JPanel netWorkDrawing;
+    private final Thread diskThread;
+    private final Thread cpuThread;
+    private final Thread uptimeThread;
     //endregion
 
     public Frame() {
@@ -102,16 +109,16 @@ public class Frame extends JFrame implements ActionListener {
         JPanel newComponentPanel = new JPanel();
         newComponentPanel.setBackground(darkerUIColor);
         nameField = new JTextField(15);
-        ipAddressField = new JTextField(5);
+        hostnameField = new JTextField(5);
         priceField = new JTextField(5);
-        setNumbersOnly(priceField, true);
+        setNumbersOnly(priceField);
         availabilityField = new JTextField(5);
-        setNumbersOnly(availabilityField, true);
+        setNumbersOnly(availabilityField);
         typeComboBox = new JComboBox<>(ComponentType.values());
         addNewComponentButton = new JButton("Add");
         addNewComponentButton.addActionListener(this);
         uptimeField = new JTextField(5);
-        setNumbersOnly(availabilityField, true);
+        setNumbersOnly(availabilityField);
         uptimeField.setText("90");
         optimizeButton = new JButton("Optimize");
         optimizeButton.addActionListener(this::optimize);
@@ -119,8 +126,8 @@ public class Frame extends JFrame implements ActionListener {
 
         newComponentPanel.add(new JLabel("Name"));
         newComponentPanel.add(nameField);
-        newComponentPanel.add(new JLabel("Ip address"));
-        newComponentPanel.add(ipAddressField);
+        newComponentPanel.add(new JLabel("Host"));
+        newComponentPanel.add(hostnameField);
         newComponentPanel.add(new JLabel("Price"));
         newComponentPanel.add(priceField);
         newComponentPanel.add(new JLabel("Availability"));
@@ -155,13 +162,17 @@ public class Frame extends JFrame implements ActionListener {
         monitoring.setBackground(darkerUIColor);
 
         JPanel monitoringInfo = new JPanel();
-        monitoringInfo.setLayout(new GridLayout(8, 2));
+        monitoringInfo.setLayout(new GridLayout(9, 2));
         monitoringInfo.setBackground(darkerUIColor);
 
 
         monitoringInfo.add(new JLabel("Name: "));
         monitoringName = new JLabel("");
         monitoringInfo.add(monitoringName);
+
+        monitoringInfo.add(new JLabel("Host: "));
+        monitoringHost = new JLabel("");
+        monitoringInfo.add(monitoringHost);
 
         monitoringInfo.add(new JLabel("Availability: "));
         monitoringAvailability = new JLabel("");
@@ -208,6 +219,10 @@ public class Frame extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
 
         setVisible(true);
+        //TODO juiste commando's gebruiken
+        diskThread = startMonitoring(monitoringDisk, "df -h");
+        cpuThread = startMonitoring(monitoringCpu, "df -h");
+        uptimeThread = startMonitoring(monitoringUptime, "df -h");
     }
 
     private void optimize(ActionEvent actionEvent) {
@@ -277,16 +292,17 @@ public class Frame extends JFrame implements ActionListener {
 
     private void prefillComponent(InfrastructureComponent component) {
         nameField.setText(component.getComponentName());
+        hostnameField.setText(component.getHostname());
         priceField.setText(String.valueOf(component.getCostInEuros()));
         availabilityField.setText(String.valueOf(component.getAvailability()));
         typeComboBox.setSelectedItem(component.getType());
     }
 
-    private void setNumbersOnly(JTextField field, boolean isDouble) {
+    private void setNumbersOnly(JTextField field) {
         field.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (((c >= '0') && (c <= '9')) || (isDouble && (c == '.')) || (isDouble && (c == ',')) || (c == KeyEvent.VK_BACK_SPACE)) {
+                if ((c >= '0' && c <= '9') || c == '.' || c == ',' || c == KeyEvent.VK_BACK_SPACE) {
                     return;
                 }
                 e.consume();
@@ -311,31 +327,55 @@ public class Frame extends JFrame implements ActionListener {
 
     private void refresh() {
         refreshButton.setText("Refreshing...");
-        refreshButton.setEnabled(false);
+        diskThread.interrupt();
+        cpuThread.interrupt();
+        uptimeThread.interrupt();
+    }
+
+    private Thread startMonitoring(JLabel label, String command) {
         //Start a new thread, so the application doesn't freeze
         Thread thread = new Thread(() -> {
-            System.out.println("Starting Command");
-            String host = "192.168.1.101";
-            String command = "df -H";
-            try {
-                Process proc = getRuntime().exec(new String[]{"ssh", host, command});
-                String data = read(proc.getInputStream());
-                System.out.println("Command Tried1");
-                System.out.print(data + "\n");
-                if (proc.waitFor() != 0) {
-                    read(proc.getErrorStream());
-                    System.err.print(data + "\n");
+            while (true) {
+                try {
+                    if (monitoredComponent == null) {
+                        sleep(30_000);
+                        continue;
+                    }
+                    String host = monitoredComponent.getHostname();
+                    System.out.println("Starting Command on host: " + host);
+//                    Process proc = getRuntime().exec(new String[]{"ssh", host, command});
+                    Process proc = getRuntime().exec(new String[]{"ssh", host, command});
+                    String data = read(proc.getInputStream());
+                    System.out.println("Command Tried1");
+                    System.out.print(data + "\n");
+                    if (proc.waitFor() != 0) {
+                        read(proc.getErrorStream());
+                        System.err.print(data + "\n");
+                    }
+                    label.setText(data);
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                    monitoringLastUpdate.setText(dtf.format(LocalDateTime.now()));
+                    sleep(10_000);
+                } catch (InterruptedException e) {
+                    System.out.println("Interrupted");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    try {
+                        sleep(10_000);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                } finally {
+                    System.out.println("Command Tried");
+                    refreshButton.setText("Refresh");
                 }
-                //TODO: Opgehaalde data tonen
-            } catch (InterruptedException | IOException e) {
-                e.printStackTrace();
             }
-            System.out.println("Command Tried");
-            refreshButton.setText("Refresh");
-            refreshButton.setEnabled(true);
         });
 
+        thread.setDaemon(true);
         thread.start();
+
+        return thread;
     }
 
     private String read(InputStream inputStream) throws IOException {
@@ -364,7 +404,7 @@ public class Frame extends JFrame implements ActionListener {
 //                throw new IllegalArgumentException("Component already exist with name: " + nameField.getText());
                 return;
             }
-            InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType, ipAddressField.getText(), null);
+            InfrastructureComponent addedComponent = new InfrastructureComponent(nameField.getText(), price, availability, selectedType, hostnameField.getText(), null);
             network.addComponent(addedComponent);
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
@@ -488,12 +528,10 @@ public class Frame extends JFrame implements ActionListener {
 
     public void showDetails(InfrastructureComponent component) {
         monitoringName.setText(component.getComponentName());
+        monitoringHost.setText(component.getHostname());
         monitoringAvailability.setText(String.valueOf(component.getAvailability()));
         monitoringPrice.setText(String.valueOf(component.getCostInEuros()));
-        monitoringUptime.setText("No uptime info yet");
-        monitoringCpu.setText("No cpu info yet");
-        monitoringDisk.setText("No disk info yet");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        monitoringLastUpdate.setText(dtf.format(LocalDateTime.now()));
+        monitoredComponent = component;
+        refresh();
     }
 }

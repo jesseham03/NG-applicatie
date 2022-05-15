@@ -1,10 +1,21 @@
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Comparator.comparing;
+
 public class Optimize {
     public Network calculateCheapest(Network input, double requiredUptime) {
+        // Sort to optimize the optimizing
+        input.getFirewallComponents().sort(compareFunction());
+        input.getWebServerComponents().sort(compareFunction());
+        input.getDatabaseServerComponents().sort(compareFunction());
         return findBest(input, requiredUptime, new Network(), null);
+    }
+
+    private Comparator<InfrastructureComponent> compareFunction() {
+        return comparing(InfrastructureComponent::getAvailability).reversed();
     }
 
     private Network findBest(Network input, double requiredUptime, Network network, Network bestNetwork) {
