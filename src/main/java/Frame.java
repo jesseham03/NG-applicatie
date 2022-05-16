@@ -221,7 +221,7 @@ public class Frame extends JFrame implements ActionListener {
         setVisible(true);
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
-        cpuThread = startMonitoring(monitoringCpu, "top");
+        cpuThread = startMonitoring(monitoringCpu, "df -h");
         uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $1}'");
     }
 
