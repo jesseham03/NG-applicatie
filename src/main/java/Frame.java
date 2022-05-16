@@ -220,9 +220,9 @@ public class Frame extends JFrame implements ActionListener {
 
         setVisible(true);
         //TODO juiste commando's gebruiken
-        diskThread = startMonitoring(monitoringDisk, "df -h");
-        cpuThread = startMonitoring(monitoringCpu, "df -h");
-        uptimeThread = startMonitoring(monitoringUptime, "df -h");
+        diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
+        cpuThread = startMonitoring(monitoringCpu, "top");
+        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $1}'");
     }
 
     private void optimize(ActionEvent actionEvent) {
