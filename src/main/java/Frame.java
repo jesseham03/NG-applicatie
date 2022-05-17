@@ -57,6 +57,8 @@ public class Frame extends JFrame implements ActionListener {
     private final JLabel totalAvailabilityLabelValue;
 
     private final JMenuItem openFileButton;
+    private final JMenuItem loadCurrentNetworkButton;
+    private final JMenuItem loadDefaultNetworkButton;
     private final JMenuItem saveFileButton;
     private final JMenuItem quitButton;
 
@@ -87,16 +89,24 @@ public class Frame extends JFrame implements ActionListener {
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
         JMenu start = new JMenu("Start");
+        JMenu load = new JMenu("Load");
         menuBar.add(start);
+        menuBar.add(load);
         openFileButton = new JMenuItem("Open");
         saveFileButton = new JMenuItem("Save as");
         quitButton = new JMenuItem("Quit");
+        loadCurrentNetworkButton = new JMenuItem("Current network");
+        loadDefaultNetworkButton = new JMenuItem("Default network");
         openFileButton.addActionListener(this);
         saveFileButton.addActionListener(this);
         quitButton.addActionListener(this);
+        loadCurrentNetworkButton.addActionListener(this);
+        loadDefaultNetworkButton.addActionListener(this);
         start.add(openFileButton);
         start.add(saveFileButton);
         start.add(quitButton);
+        load.add(loadCurrentNetworkButton);
+        load.add(loadDefaultNetworkButton);
         //endregion
 
         //region NetworkTab
@@ -222,7 +232,7 @@ public class Frame extends JFrame implements ActionListener {
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
         cpuThread = startMonitoring(monitoringCpu, "top -bn1 | awk '{print $4}' | sed -n '3 p'");
-        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $1}'");
+        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $3 \" \" $4}' | sed 's/.$//'");
     }
 
     private void optimize(ActionEvent actionEvent) {
@@ -322,6 +332,20 @@ public class Frame extends JFrame implements ActionListener {
             saveToFile();
         } else if (e.getSource() == refreshButton) {
             refresh();
+        } else if (e.getSource() == loadCurrentNetworkButton) {
+            try {
+                network = readFromJson(getClass().getClassLoader().getResourceAsStream("currentnetwork.json"));
+                RegenerateNetworkDrawing();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } else if (e.getSource() == loadDefaultNetworkButton) {
+            try {
+                network = readFromJson(getClass().getClassLoader().getResourceAsStream("defaultcomponents.json"));
+                RegenerateNetworkDrawing();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -344,7 +368,7 @@ public class Frame extends JFrame implements ActionListener {
                     String host = monitoredComponent.getHostname();
                     System.out.println("Starting Command on host: " + host);
 //                    Process proc = getRuntime().exec(new String[]{"ssh", host, command});
-                    Process proc = getRuntime().exec(new String[]{"ssh", host, command});
+                    Process proc = getRuntime().exec(new String[]{"ssh", "student@" + host, command});
                     String data = read(proc.getInputStream());
                     System.out.println("Command Tried1");
                     System.out.print(data + "\n");

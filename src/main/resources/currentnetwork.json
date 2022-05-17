@@ -2,79 +2,119 @@
   "webServerComponents": [
     {
       "componentName": "Webserver1",
-      "costInEuros": 2200.0,
-      "availability": 80,
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Web",
-      "location": null
+      "hostname": "192.168.1.101",
+      "location": {
+        "x": 392.0,
+        "y": 259.0
+      }
     },
     {
       "componentName": "Webserver2",
-      "costInEuros": 3200.0,
-      "availability": 90,
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Web",
-      "location": null
+      "hostname": "192.168.1.103",
+      "location": {
+        "x": 503.0,
+        "y": 257.0
+      }
     }
   ],
   "databaseServerComponents": [
     {
-      "componentName": "Database1",
-      "costInEuros": 5100.0,
-      "availability": 90,
+      "componentName": "Databaseserver1",
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Database",
-      "location": null
+      "hostname": "192.168.1.100",
+      "location": {
+        "x": 391.0,
+        "y": 362.0
+      }
     },
     {
-      "componentName": "Database2",
-      "costInEuros": 7700.0,
-      "availability": 95,
+      "componentName": "Databaseserver2",
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Database",
-      "location": null
+      "hostname": "192.168.1.102",
+      "location": {
+        "x": 506.0,
+        "y": 361.0
+      }
     }
   ],
   "firewallComponents": [
     {
       "componentName": "pfSense",
-      "costInEuros": 4000.0,
-      "availability": 99.998,
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Firewall",
-      "location": null
+      "hostname": "145.44.233.80",
+      "location": {
+        "x": 445.0,
+        "y": 456.0
+      }
     }
   ],
   "allComponentsCopy": [
     {
       "componentName": "Webserver1",
-      "costInEuros": 2200.0,
-      "availability": 80,
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Web",
-      "location": null
+      "hostname": "192.168.1.101",
+      "location": {
+        "x": 392.0,
+        "y": 259.0
+      }
     },
     {
       "componentName": "Webserver2",
-      "costInEuros": 3200.0,
-      "availability": 90,
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Web",
-      "location": null
+      "hostname": "192.168.1.103",
+      "location": {
+        "x": 503.0,
+        "y": 257.0
+      }
     },
     {
-      "componentName": "Database1",
-      "costInEuros": 5100.0,
-      "availability": 90,
+      "componentName": "Databaseserver1",
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Database",
-      "location": null
+      "hostname": "192.168.1.100",
+      "location": {
+        "x": 391.0,
+        "y": 362.0
+      }
     },
     {
-      "componentName": "Database2",
-      "costInEuros": 7700.0,
-      "availability": 95,
+      "componentName": "Databaseserver2",
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Database",
-      "location": null
+      "hostname": "192.168.1.102",
+      "location": {
+        "x": 506.0,
+        "y": 361.0
+      }
     },
     {
       "componentName": "pfSense",
-      "costInEuros": 4000.0,
-      "availability": 99.998,
+      "costInEuros": 1000.0,
+      "availability": 100.0,
       "type": "Firewall",
-      "location": null
+      "hostname": "145.44.233.80",
+      "location": {
+        "x": 445.0,
+        "y": 456.0
+      }
     }
   ]
 }
