@@ -45,6 +45,11 @@ public class Frame extends JFrame implements ActionListener {
     private final Color darkerUIColor = new Color(40, 40, 40);
     private final Color errorColor = new Color(237, 67, 55);
 
+    private JPanel monitoring;
+    private JButton RefreshButton;
+    private JScrollPane scrollpane;
+    private JPanel bottomPanel;
+
     private final JButton addNewComponentButton;
     private final JButton optimizeButton;
     private final JButton refreshButton;
@@ -116,7 +121,7 @@ public class Frame extends JFrame implements ActionListener {
         JPanel networkTab = new JPanel();
         networkTab.setLayout(new BorderLayout());
 
-        JPanel bottomPanel = new JPanel();
+        bottomPanel = new JPanel();
         bottomPanel.setBackground(darkerUIColor);
 
         JPanel newComponentPanel = new JPanel();
@@ -350,6 +355,48 @@ public class Frame extends JFrame implements ActionListener {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        } else if(e.getSource() == ){
+            Open
+        }
+    }
+
+    private void openMonitoring(){
+        try {
+            monitoring = new JPanel();
+            monitoring.setLayout(new FlowLayout());
+
+            JPanel MonitoringInfo = new JPanel();
+            MonitoringInfo.setLayout(new GridLayout(6, 1));
+            RefreshButton = new JButton("Refresh");
+
+            MonitoringInfo.add(RefreshButton);
+            RefreshButton.addActionListener(this);
+
+
+
+            String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
+            imageMap = createImageMap(categories);
+
+
+            JList list = new JList(categories);
+            list.setCellRenderer(new ListRenderer());
+            scrollpane = new JScrollPane(list);
+
+
+            setVisible(true);
+            //monitoring.add(MonitoringBar);
+            monitoring.add(MonitoringInfo);
+            getContentPane().add(scrollpane, BorderLayout.WEST);
+            getContentPane().add(monitoring, BorderLayout.CENTER);
+            bottomPanel.setVisible(false);
+            netWorkDrawing.setVisible(false);
+
+
+            setVisible(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
     }
 
