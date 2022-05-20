@@ -2,6 +2,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -85,6 +86,8 @@ public class Frame extends JFrame implements ActionListener {
 //        setUIFont(new javax.swing.plaf.FontUIResource("Roboto", Font.PLAIN, 15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //endregion
+
+        Splash splash = new Splash();
 
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
@@ -228,6 +231,7 @@ public class Frame extends JFrame implements ActionListener {
 
         setLocationRelativeTo(null);
 
+        monitoringInfo.setVisible(false);
         setVisible(true);
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
