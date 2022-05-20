@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -12,6 +13,8 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static java.awt.BorderLayout.*;
@@ -27,6 +30,7 @@ public class Frame extends JFrame implements ActionListener {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final ObjectWriter OBJECT_WRITER = OBJECT_MAPPER.writer().withDefaultPrettyPrinter();
     private static final ObjectReader OBJECT_READER = OBJECT_MAPPER.reader();
+    public static Map<String, ImageIcon> imageMap = null;
     private final JLabel monitoringName;
     private final JLabel monitoringAvailability;
     private final JLabel monitoringUptime;
@@ -49,6 +53,8 @@ public class Frame extends JFrame implements ActionListener {
     private JButton RefreshButton;
     private JScrollPane scrollpane;
     private JPanel bottomPanel;
+
+    private final JMenuItem monitoringbutton;
 
     private final JButton addNewComponentButton;
     private final JButton optimizeButton;
@@ -105,16 +111,19 @@ public class Frame extends JFrame implements ActionListener {
         quitButton = new JMenuItem("Quit");
         loadCurrentNetworkButton = new JMenuItem("Current network");
         loadDefaultNetworkButton = new JMenuItem("Default network");
+        monitoringbutton = new JMenu("Monitoring");
         openFileButton.addActionListener(this);
         saveFileButton.addActionListener(this);
         quitButton.addActionListener(this);
         loadCurrentNetworkButton.addActionListener(this);
         loadDefaultNetworkButton.addActionListener(this);
+        monitoringbutton.addActionListener(this);
         start.add(openFileButton);
         start.add(saveFileButton);
         start.add(quitButton);
         load.add(loadCurrentNetworkButton);
         load.add(loadDefaultNetworkButton);
+        load.add(monitoringbutton);
         //endregion
 
         //region NetworkTab
@@ -355,8 +364,8 @@ public class Frame extends JFrame implements ActionListener {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        } else if(e.getSource() == ){
-            Open
+        } else if(e.getSource() == monitoringbutton){
+            openMonitoring();
         }
     }
 
@@ -398,6 +407,21 @@ public class Frame extends JFrame implements ActionListener {
             e.printStackTrace();
             return;
         }
+    }
+
+    private Map<String, ImageIcon> createImageMap(String[] categories) {
+        Map<String, ImageIcon> map = new HashMap<>();
+        try{
+            map.put("Database Server 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("databaseservericon.png"))));
+            map.put("Database Server 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("databaseservericon.png"))));
+            map.put("Webserver 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("webservericon.png"))));
+            map.put("Webserver 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("webservericon.png"))));
+            map.put("Firewall", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("firewallicon.png"))));
+        } catch(Exception e ){
+            e.printStackTrace();
+        }
+        return map;
+
     }
 
     private void refresh() {
