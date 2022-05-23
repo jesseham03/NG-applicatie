@@ -78,6 +78,9 @@ public class Frame extends JFrame implements ActionListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Splash splash = new Splash();
+
         setIconImage(getDefaultToolkit().getImage(getClass().getResource("/Favicon2.png")));
         setTitle("NG Network-Application");
         setSize(650, 450);
