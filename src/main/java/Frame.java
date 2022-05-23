@@ -11,6 +11,8 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static java.awt.BorderLayout.*;
@@ -361,6 +363,22 @@ public class Frame extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
         }
+    }
+
+
+    private Map<String, ImageIcon> createImageMap(String[] categories) {
+        Map<String, ImageIcon> map = new HashMap<>();
+        try{
+            map.put("Database Server 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("databaseservericon.png"))));
+            map.put("Database Server 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("databaseservericon.png"))));
+            map.put("Webserver 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("webservericon.png"))));
+            map.put("Webserver 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("webservericon.png"))));
+            map.put("Firewall", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("firewallicon.png"))));
+        } catch(Exception e ){
+            e.printStackTrace();
+        }
+        return map;
+
     }
 
     private void refresh() {
