@@ -81,6 +81,7 @@ public class Frame extends JFrame implements ActionListener {
 
     //endregion
 
+    //frame design
     public Frame() {
         frame = this;
         //region Frame setup
@@ -93,7 +94,6 @@ public class Frame extends JFrame implements ActionListener {
         setTitle("NG Network-Application");
         setSize(650, 450);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        setUIFont(new javax.swing.plaf.FontUIResource("Roboto", Font.PLAIN, 15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //endregion
 
@@ -243,7 +243,7 @@ public class Frame extends JFrame implements ActionListener {
 
 
         monitoringTab = new JPanel();
-        monitoringTab.setLayout(new FlowLayout());
+        monitoringTab.setLayout(new BorderLayout());
 
         String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
         imageMap = createImageMap(categories);
@@ -275,8 +275,7 @@ public class Frame extends JFrame implements ActionListener {
 
 
 
-
-
+    //functions
     private void optimize(ActionEvent actionEvent) {
         try {
             double requiredUptime = Double.parseDouble(uptimeField.getText());
@@ -393,41 +392,6 @@ public class Frame extends JFrame implements ActionListener {
 
     }
 
-//    private void openMonitoring(){
-//        try {
-//            monitoring = new JPanel();
-//            monitoring.setLayout(new FlowLayout());
-//
-//            JPanel MonitoringInfo = new JPanel();
-//            MonitoringInfo.setLayout(new GridLayout(6, 1));
-//            RefreshButton = new JButton("Refresh");
-//
-//            MonitoringInfo.add(RefreshButton);
-//            RefreshButton.addActionListener(this);
-//
-//            String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
-//            imageMap = createImageMap(categories);
-//
-//            JList list = new JList(categories);
-//            list.setCellRenderer(new ListRenderer());
-//            scrollpane = new JScrollPane(list);
-//
-//            setVisible(true);
-//            //monitoring.add(MonitoringBar);
-//            monitoring.add(MonitoringInfo);
-//            getContentPane().add(scrollpane, BorderLayout.WEST);
-//            getContentPane().add(monitoring, BorderLayout.CENTER);
-//            bottomPanel.setVisible(false);
-//            netWorkDrawing.setVisible(false);
-//
-//
-//            setVisible(true);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//    }
 
     private Map<String, ImageIcon> createImageMap(String[] categories) {
         Map<String, ImageIcon> map = new HashMap<>();
