@@ -87,7 +87,6 @@ public class Frame extends JFrame implements ActionListener {
         setTitle("NG Network-Application");
         setSize(650, 450);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        setUIFont(new javax.swing.plaf.FontUIResource("Roboto", Font.PLAIN, 15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //endregion
 
@@ -238,8 +237,8 @@ public class Frame extends JFrame implements ActionListener {
 
 
         getContentPane().add(BorderLayout.NORTH, menuBar);
-        tabbedPane.addTab("Design", networkTab);
-        tabbedPane.addTab("Monitor", monitoringtab);
+        tabbedPane.addTab("Design and Optimize", networkTab);
+        tabbedPane.addTab("Monitoring", monitoringtab);
         getContentPane().add(tabbedPane);
 
         setLocationRelativeTo(null);
@@ -251,6 +250,7 @@ public class Frame extends JFrame implements ActionListener {
         uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $3 \" \" $4}' | sed 's/.$//'");
     }
 
+    //functions
     private void optimize(ActionEvent actionEvent) {
         try {
             double requiredUptime = Double.parseDouble(uptimeField.getText());
@@ -363,22 +363,6 @@ public class Frame extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
         }
-    }
-
-
-    private Map<String, ImageIcon> createImageMap(String[] categories) {
-        Map<String, ImageIcon> map = new HashMap<>();
-        try{
-            map.put("Database Server 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("databaseservericon.png"))));
-            map.put("Database Server 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("databaseservericon.png"))));
-            map.put("Webserver 1", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("webservericon.png"))));
-            map.put("Webserver 2", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("webservericon.png"))));
-            map.put("Firewall", new ImageIcon(getDefaultToolkit().getImage(getClass().getResource("firewallicon.png"))));
-        } catch(Exception e ){
-            e.printStackTrace();
-        }
-        return map;
-
     }
 
     private void refresh() {
@@ -561,25 +545,6 @@ public class Frame extends JFrame implements ActionListener {
                 e.printStackTrace();
             }
         }
-
-        //region Save as txt
-//        int option = fileChooser.showSaveDialog(this);
-//        if (option == JFileChooser.APPROVE_OPTION) {
-//            File file = fileChooser.getSelectedFile();
-//            if (file == null) {
-//                return;
-//            }
-//            if (!file.getName().toLowerCase().endsWith(".txt")) {
-//                file = new File(file.getParentFile(), file.getName() + ".txt");
-//            }
-//            try {
-//                componentList.write(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
-//                Desktop.getDesktop().open(file);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-        //endregion
     }
 
     public void showDetails(InfrastructureComponent component) {
