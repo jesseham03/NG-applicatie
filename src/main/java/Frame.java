@@ -28,6 +28,7 @@ public class Frame extends JFrame implements ActionListener {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final ObjectWriter OBJECT_WRITER = OBJECT_MAPPER.writer().withDefaultPrettyPrinter();
     private static final ObjectReader OBJECT_READER = OBJECT_MAPPER.reader();
+
     private final JLabel monitoringName;
     private final JLabel monitoringAvailability;
     private final JLabel monitoringUptime;
@@ -35,8 +36,9 @@ public class Frame extends JFrame implements ActionListener {
     private final JLabel monitoringDisk;
     private final JLabel monitoringPrice;
     private final JLabel monitoringLastUpdate;
-    private final JTextField hostnameField;
     private final JLabel monitoringHost;
+
+    private final JTextField hostnameField;
 
     private InfrastructureComponent monitoredComponent;
 
@@ -49,12 +51,13 @@ public class Frame extends JFrame implements ActionListener {
     private final JButton addNewComponentButton;
     private final JButton optimizeButton;
     private final JButton refreshButton;
+
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
     private final JTextField uptimeField;
-    private final JLabel errorLabel;
 
+    private final JLabel errorLabel;
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
 
@@ -67,6 +70,7 @@ public class Frame extends JFrame implements ActionListener {
     private final JComboBox<ComponentType> typeComboBox;
 
     private final JPanel netWorkDrawing;
+
     private final Thread diskThread;
     private final Thread cpuThread;
     private final Thread uptimeThread;
@@ -232,9 +236,8 @@ public class Frame extends JFrame implements ActionListener {
         networkTab.add(CENTER, netWorkDrawing);
         networkTab.add(SOUTH, bottomPanel);
         monitoringtab.add(WEST, new JScrollPane(monitoringComponentsPanel));
-        monitoringtab.add(EAST, monitoring);
+        monitoringtab.add(CENTER, monitoring);
         //endregion
-
 
         getContentPane().add(BorderLayout.NORTH, menuBar);
         tabbedPane.addTab("Design and Optimize", networkTab);
@@ -373,6 +376,7 @@ public class Frame extends JFrame implements ActionListener {
     }
 
     private Thread startMonitoring(JLabel label, String command) {
+
         //Start a new thread, so the application doesn't freeze
         Thread thread = new Thread(() -> {
             while (true) {
@@ -441,6 +445,7 @@ public class Frame extends JFrame implements ActionListener {
 
             if (network.getAllComponentsCopy().stream().anyMatch(c -> nameField.getText().equals(c.getComponentName()))) {
                 setError("Component already exist with name: " + nameField.getText());
+
 //                throw new IllegalArgumentException("Component already exist with name: " + nameField.getText());
                 return;
             }
@@ -459,6 +464,7 @@ public class Frame extends JFrame implements ActionListener {
 
         //Set default open location
         File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" + System.getProperty("file.separator") + "NerdygadgetsFiles");
+
         //If the directory does not exist, make it
         saveDirectory.mkdir();
         chooser.setCurrentDirectory(saveDirectory);
@@ -486,6 +492,7 @@ public class Frame extends JFrame implements ActionListener {
     private void RegenerateNetworkDrawing() {
         String calculatedPrice = String.valueOf(network.calculatePrice());
         totalPriceLabelValue.setText(calculatedPrice);
+
         //Formatting the calculatedavailability
         DecimalFormat df = new DecimalFormat("#.######");
         df.setRoundingMode(CEILING);
@@ -520,9 +527,11 @@ public class Frame extends JFrame implements ActionListener {
     }
 
     private void saveToFile() {
+
         //Set the default save directory
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
         File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" + System.getProperty("file.separator") + "NerdygadgetsFiles");
+
         //If the directory does not exist, make it
         saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
