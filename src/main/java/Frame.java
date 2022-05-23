@@ -222,7 +222,7 @@ public class Frame extends JFrame implements ActionListener {
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
         cpuThread = startMonitoring(monitoringCpu, "top -bn1 | awk '{print $4}' | sed -n '3 p'");
-        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $1}'");
+        uptimeThread = startMonitoring(monitoringUptime, "ssh 192.168.1.101 service apache2 status | awk '{print $9,$10,$11,$12}' | sed -n '5 p'");
     }
 
     private void optimize(ActionEvent actionEvent) {
