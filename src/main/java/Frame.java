@@ -49,12 +49,10 @@ public class Frame extends JFrame implements ActionListener {
     private final Color darkerUIColor = new Color(40, 40, 40);
     private final Color errorColor = new Color(237, 67, 55);
 
-    private JPanel monitoring;
+    private JPanel monitoringTab;
     private JButton RefreshButton;
     private JScrollPane scrollpane;
     private JPanel bottomPanel;
-
-    private final JMenuItem monitoringbutton;
 
     private final JButton addNewComponentButton;
     private final JButton optimizeButton;
@@ -80,6 +78,7 @@ public class Frame extends JFrame implements ActionListener {
     private final Thread diskThread;
     private final Thread cpuThread;
     private final Thread uptimeThread;
+
     //endregion
 
     public Frame() {
@@ -100,6 +99,10 @@ public class Frame extends JFrame implements ActionListener {
 
         Splash splash = new Splash();
 
+        //region tabbedpane
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setBackground(darkerUIColor);
+
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
         JMenu start = new JMenu("Start");
@@ -111,19 +114,16 @@ public class Frame extends JFrame implements ActionListener {
         quitButton = new JMenuItem("Quit");
         loadCurrentNetworkButton = new JMenuItem("Current network");
         loadDefaultNetworkButton = new JMenuItem("Default network");
-        monitoringbutton = new JMenu("Monitoring");
         openFileButton.addActionListener(this);
         saveFileButton.addActionListener(this);
         quitButton.addActionListener(this);
         loadCurrentNetworkButton.addActionListener(this);
         loadDefaultNetworkButton.addActionListener(this);
-        monitoringbutton.addActionListener(this);
         start.add(openFileButton);
         start.add(saveFileButton);
         start.add(quitButton);
         load.add(loadCurrentNetworkButton);
         load.add(loadDefaultNetworkButton);
-        load.add(monitoringbutton);
         //endregion
 
         //region NetworkTab
@@ -240,8 +240,28 @@ public class Frame extends JFrame implements ActionListener {
         networkTab.add(EAST, monitoring);
         //endregion
 
-        getContentPane().add(BorderLayout.NORTH, menuBar);
-        getContentPane().add(networkTab);
+
+
+        monitoringTab = new JPanel();
+        monitoringTab.setLayout(new FlowLayout());
+
+        String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
+        imageMap = createImageMap(categories);
+
+        JList list = new JList(categories);
+        list.setCellRenderer(new ListRenderer());
+        scrollpane = new JScrollPane(list);
+
+        monitoringTab.add(BorderLayout.EAST, monitoring);
+        monitoringTab.add(BorderLayout.WEST, scrollpane);
+
+
+        tabbedPane.addTab("Design", networkTab);
+        tabbedPane.addTab("Monitoring", monitoringTab);
+
+        getContentPane().add(BorderLayout.NORTH , menuBar);
+        getContentPane().add(tabbedPane);
+
 
         setLocationRelativeTo(null);
 
@@ -252,6 +272,10 @@ public class Frame extends JFrame implements ActionListener {
         cpuThread = startMonitoring(monitoringCpu, "top -bn1 | awk '{print $4}' | sed -n '3 p'");
         uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $3 \" \" $4}' | sed 's/.$//'");
     }
+
+
+
+
 
     private void optimize(ActionEvent actionEvent) {
         try {
@@ -304,6 +328,7 @@ public class Frame extends JFrame implements ActionListener {
         }
         return panel;
     }
+
 
     private JPanel createPanel(int rows) {
         JPanel panel = new JPanel();
@@ -364,50 +389,45 @@ public class Frame extends JFrame implements ActionListener {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        } else if(e.getSource() == monitoringbutton){
-            openMonitoring();
         }
+
     }
 
-    private void openMonitoring(){
-        try {
-            monitoring = new JPanel();
-            monitoring.setLayout(new FlowLayout());
-
-            JPanel MonitoringInfo = new JPanel();
-            MonitoringInfo.setLayout(new GridLayout(6, 1));
-            RefreshButton = new JButton("Refresh");
-
-            MonitoringInfo.add(RefreshButton);
-            RefreshButton.addActionListener(this);
-
-
-
-            String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
-            imageMap = createImageMap(categories);
-
-
-            JList list = new JList(categories);
-            list.setCellRenderer(new ListRenderer());
-            scrollpane = new JScrollPane(list);
-
-
-            setVisible(true);
-            //monitoring.add(MonitoringBar);
-            monitoring.add(MonitoringInfo);
-            getContentPane().add(scrollpane, BorderLayout.WEST);
-            getContentPane().add(monitoring, BorderLayout.CENTER);
-            bottomPanel.setVisible(false);
-            netWorkDrawing.setVisible(false);
-
-
-            setVisible(true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-    }
+//    private void openMonitoring(){
+//        try {
+//            monitoring = new JPanel();
+//            monitoring.setLayout(new FlowLayout());
+//
+//            JPanel MonitoringInfo = new JPanel();
+//            MonitoringInfo.setLayout(new GridLayout(6, 1));
+//            RefreshButton = new JButton("Refresh");
+//
+//            MonitoringInfo.add(RefreshButton);
+//            RefreshButton.addActionListener(this);
+//
+//            String[] categories = {"Database Server 1", "Database Server 2", "Webserver 1", "Webserver 2", "Firewall"};
+//            imageMap = createImageMap(categories);
+//
+//            JList list = new JList(categories);
+//            list.setCellRenderer(new ListRenderer());
+//            scrollpane = new JScrollPane(list);
+//
+//            setVisible(true);
+//            //monitoring.add(MonitoringBar);
+//            monitoring.add(MonitoringInfo);
+//            getContentPane().add(scrollpane, BorderLayout.WEST);
+//            getContentPane().add(monitoring, BorderLayout.CENTER);
+//            bottomPanel.setVisible(false);
+//            netWorkDrawing.setVisible(false);
+//
+//
+//            setVisible(true);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//    }
 
     private Map<String, ImageIcon> createImageMap(String[] categories) {
         Map<String, ImageIcon> map = new HashMap<>();
