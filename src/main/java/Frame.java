@@ -86,6 +86,9 @@ public class Frame extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //endregion
 
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setBackground(darkerUIColor);
+
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
         JMenu start = new JMenu("Start");
@@ -108,6 +111,11 @@ public class Frame extends JFrame implements ActionListener {
         load.add(loadCurrentNetworkButton);
         load.add(loadDefaultNetworkButton);
         //endregion
+
+        JPanel monitoringtab = new JPanel();
+        monitoringtab.setLayout(new BorderLayout());
+        JPanel monitoringComponentsPanel = createComponentPanel((b, c) -> prefillComponent(c), "/currentnetwork.json");
+        monitoringComponentsPanel.setBackground(darkerUIColor);
 
         //region NetworkTab
         JPanel networkTab = new JPanel();
@@ -175,7 +183,6 @@ public class Frame extends JFrame implements ActionListener {
         monitoringInfo.setLayout(new GridLayout(9, 2));
         monitoringInfo.setBackground(darkerUIColor);
 
-
         monitoringInfo.add(new JLabel("Name: "));
         monitoringName = new JLabel("");
         monitoringInfo.add(monitoringName);
@@ -214,17 +221,21 @@ public class Frame extends JFrame implements ActionListener {
 
         monitoring.add(monitoringInfo);
 
-        JPanel componentsPanel = createComponentPanel((b, c) -> prefillComponent(c));
+        JPanel componentsPanel = createComponentPanel((b, c) -> prefillComponent(c), "/defaultcomponents.json");
         componentsPanel.setBackground(darkerUIColor);
 
         networkTab.add(WEST, new JScrollPane(componentsPanel));
         networkTab.add(CENTER, netWorkDrawing);
         networkTab.add(SOUTH, bottomPanel);
-        networkTab.add(EAST, monitoring);
+        monitoringtab.add(WEST, new JScrollPane(monitoringComponentsPanel));
+        monitoringtab.add(EAST, monitoring);
         //endregion
 
+
         getContentPane().add(BorderLayout.NORTH, menuBar);
-        getContentPane().add(networkTab);
+        tabbedPane.addTab("Design", networkTab);
+        tabbedPane.addTab("Monitor", monitoringtab);
+        getContentPane().add(tabbedPane);
 
         setLocationRelativeTo(null);
 
@@ -274,9 +285,9 @@ public class Frame extends JFrame implements ActionListener {
         errorLabel.setForeground(errorColor);
     }
 
-    private JPanel createComponentPanel(BiConsumer<JButton, InfrastructureComponent> buttonFunction) {
+    private JPanel createComponentPanel(BiConsumer<JButton, InfrastructureComponent> buttonFunction, String jsonFile) {
         JPanel panel = createPanel(0);
-        try (InputStream stream = getClass().getResourceAsStream("/defaultcomponents.json")) {
+        try (InputStream stream = getClass().getResourceAsStream(jsonFile)) {
             Network defaultNetwork = readFromJson(stream);
             for (InfrastructureComponent component : defaultNetwork.getAllComponentsCopy()) {
                 addComponentButton(buttonFunction, panel, component);
