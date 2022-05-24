@@ -11,8 +11,6 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static java.awt.BorderLayout.*;
@@ -122,7 +120,7 @@ public class Frame extends JFrame implements ActionListener {
 
         JPanel monitoringtab = new JPanel();
         monitoringtab.setLayout(new BorderLayout());
-        JPanel monitoringComponentsPanel = createComponentPanel((b, c) -> prefillComponent(c), "/currentnetwork.json");
+        JPanel monitoringComponentsPanel = createComponentPanel((b, c) -> showDetails(c), "/currentnetwork.json");
         monitoringComponentsPanel.setBackground(darkerUIColor);
 
         //region NetworkTab
@@ -389,13 +387,11 @@ public class Frame extends JFrame implements ActionListener {
                     System.out.println("Starting Command on host: " + host);
 //                    Process proc = getRuntime().exec(new String[]{"ssh", host, command});
                     Process proc;
-                     if (host.equals("145.44.233.80"))
-                     {
-                         proc = getRuntime().exec(new String[]{"ssh", "admin@" + host, command});
-                     }  else
-                     {
+                    if (host.equals("145.44.233.80")) {
+                        proc = getRuntime().exec(new String[]{"ssh", "admin@" + host, command});
+                    } else {
                         proc = getRuntime().exec(new String[]{"ssh", "student@" + host, command});
-                     }
+                    }
 
                     String data = read(proc.getInputStream());
                     System.out.println("Command Tried1");
