@@ -250,7 +250,7 @@ public class Frame extends JFrame implements ActionListener {
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
         cpuThread = startMonitoring(monitoringCpu, "top -bn1 | awk '{print $4}' | sed -n '3 p'");
-        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $3 \" \" $4}' | sed 's/.$//'");
+        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $9, $10, $11}' | sed -n '5 p'");
     }
 
     //functions
@@ -388,7 +388,15 @@ public class Frame extends JFrame implements ActionListener {
                     String host = monitoredComponent.getHostname();
                     System.out.println("Starting Command on host: " + host);
 //                    Process proc = getRuntime().exec(new String[]{"ssh", host, command});
-                    Process proc = getRuntime().exec(new String[]{"ssh", "student@" + host, command});
+                    Process proc;
+                     if (host.equals("145.44.233.80"))
+                     {
+                         proc = getRuntime().exec(new String[]{"ssh", "admin@" + host, command});
+                     }  else
+                     {
+                        proc = getRuntime().exec(new String[]{"ssh", "student@" + host, command});
+                     }
+
                     String data = read(proc.getInputStream());
                     System.out.println("Command Tried1");
                     System.out.print(data + "\n");
