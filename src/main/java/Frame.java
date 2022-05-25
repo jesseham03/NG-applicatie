@@ -248,7 +248,7 @@ public class Frame extends JFrame implements ActionListener {
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
         cpuThread = startMonitoring(monitoringCpu, "top -bn1 | awk '{print $4}' | sed -n '3 p'");
-        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $9, $10, $11}' | sed -n '5 p'");
+        uptimeThread = startMonitoring(monitoringUptime, "service apache2 status | awk '{print $9, $10, $11, $12}' | sed -n '5 p'");
     }
 
     //functions
