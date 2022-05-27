@@ -26,6 +26,7 @@ public class Frame extends JFrame implements ActionListener {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final ObjectWriter OBJECT_WRITER = OBJECT_MAPPER.writer().withDefaultPrettyPrinter();
     private static final ObjectReader OBJECT_READER = OBJECT_MAPPER.reader();
+
     private final JLabel monitoringName;
     private final JLabel monitoringAvailability;
     private final JLabel monitoringUptime;
@@ -33,8 +34,9 @@ public class Frame extends JFrame implements ActionListener {
     private final JLabel monitoringDisk;
     private final JLabel monitoringPrice;
     private final JLabel monitoringLastUpdate;
-    private final JTextField hostnameField;
     private final JLabel monitoringHost;
+
+    private final JTextField hostnameField;
 
     private InfrastructureComponent monitoredComponent;
 
@@ -47,12 +49,13 @@ public class Frame extends JFrame implements ActionListener {
     private final JButton addNewComponentButton;
     private final JButton optimizeButton;
     private final JButton refreshButton;
+
     private final JTextField nameField;
     private final JTextField priceField;
     private final JTextField availabilityField;
     private final JTextField uptimeField;
-    private final JLabel errorLabel;
 
+    private final JLabel errorLabel;
     private final JLabel totalPriceLabelValue;
     private final JLabel totalAvailabilityLabelValue;
 
@@ -65,6 +68,7 @@ public class Frame extends JFrame implements ActionListener {
     private final JComboBox<ComponentType> typeComboBox;
 
     private final JPanel netWorkDrawing;
+
     private final Thread diskThread;
     private final Thread cpuThread;
     private final Thread uptimeThread;
@@ -78,13 +82,18 @@ public class Frame extends JFrame implements ActionListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Splash splash = new Splash();
+
         setIconImage(getDefaultToolkit().getImage(getClass().getResource("/Favicon2.png")));
         setTitle("NG Network-Application");
         setSize(650, 450);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        setUIFont(new javax.swing.plaf.FontUIResource("Roboto", Font.PLAIN, 15));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //endregion
+
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setBackground(darkerUIColor);
 
         //region Menubar
         JMenuBar menuBar = new JMenuBar();
@@ -108,6 +117,11 @@ public class Frame extends JFrame implements ActionListener {
         load.add(loadCurrentNetworkButton);
         load.add(loadDefaultNetworkButton);
         //endregion
+
+        JPanel monitoringtab = new JPanel();
+        monitoringtab.setLayout(new BorderLayout());
+        JPanel monitoringComponentsPanel = createComponentPanel((b, c) -> showDetails(c), "/currentnetwork.json");
+        monitoringComponentsPanel.setBackground(darkerUIColor);
 
         //region NetworkTab
         JPanel networkTab = new JPanel();
@@ -175,7 +189,6 @@ public class Frame extends JFrame implements ActionListener {
         monitoringInfo.setLayout(new GridLayout(9, 2));
         monitoringInfo.setBackground(darkerUIColor);
 
-
         monitoringInfo.add(new JLabel("Name: "));
         monitoringName = new JLabel("");
         monitoringInfo.add(monitoringName);
@@ -214,17 +227,20 @@ public class Frame extends JFrame implements ActionListener {
 
         monitoring.add(monitoringInfo);
 
-        JPanel componentsPanel = createComponentPanel((b, c) -> prefillComponent(c));
+        JPanel componentsPanel = createComponentPanel((b, c) -> prefillComponent(c), "/defaultcomponents.json");
         componentsPanel.setBackground(darkerUIColor);
 
         networkTab.add(WEST, new JScrollPane(componentsPanel));
         networkTab.add(CENTER, netWorkDrawing);
         networkTab.add(SOUTH, bottomPanel);
-        networkTab.add(EAST, monitoring);
+        monitoringtab.add(WEST, new JScrollPane(monitoringComponentsPanel));
+        monitoringtab.add(CENTER, monitoring);
         //endregion
 
         getContentPane().add(BorderLayout.NORTH, menuBar);
-        getContentPane().add(networkTab);
+        tabbedPane.addTab("Design and Optimize", networkTab);
+        tabbedPane.addTab("Monitoring", monitoringtab);
+        getContentPane().add(tabbedPane);
 
         setLocationRelativeTo(null);
 
@@ -232,9 +248,10 @@ public class Frame extends JFrame implements ActionListener {
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
         cpuThread = startMonitoring(monitoringCpu, "top -bn1 | awk '{print $4}' | sed -n '3 p'");
-        uptimeThread = startMonitoring(monitoringUptime, "uptime | awk '{print $3 \" \" $4}' | sed 's/.$//'");
+        uptimeThread = startMonitoring(monitoringUptime, "service apache2 status | awk '{print $9, $10, $11, $12}' | sed -n '5 p'");
     }
 
+    //functions
     private void optimize(ActionEvent actionEvent) {
         try {
             double requiredUptime = Double.parseDouble(uptimeField.getText());
@@ -274,9 +291,9 @@ public class Frame extends JFrame implements ActionListener {
         errorLabel.setForeground(errorColor);
     }
 
-    private JPanel createComponentPanel(BiConsumer<JButton, InfrastructureComponent> buttonFunction) {
+    private JPanel createComponentPanel(BiConsumer<JButton, InfrastructureComponent> buttonFunction, String jsonFile) {
         JPanel panel = createPanel(0);
-        try (InputStream stream = getClass().getResourceAsStream("/defaultcomponents.json")) {
+        try (InputStream stream = getClass().getResourceAsStream(jsonFile)) {
             Network defaultNetwork = readFromJson(stream);
             for (InfrastructureComponent component : defaultNetwork.getAllComponentsCopy()) {
                 addComponentButton(buttonFunction, panel, component);
@@ -357,6 +374,7 @@ public class Frame extends JFrame implements ActionListener {
     }
 
     private Thread startMonitoring(JLabel label, String command) {
+
         //Start a new thread, so the application doesn't freeze
         Thread thread = new Thread(() -> {
             while (true) {
@@ -368,7 +386,13 @@ public class Frame extends JFrame implements ActionListener {
                     String host = monitoredComponent.getHostname();
                     System.out.println("Starting Command on host: " + host);
 //                    Process proc = getRuntime().exec(new String[]{"ssh", host, command});
-                    Process proc = getRuntime().exec(new String[]{"ssh", "student@" + host, command});
+                    Process proc;
+                    if (host.equals("145.44.233.80")) {
+                        proc = getRuntime().exec(new String[]{"ssh", "admin@" + host, command});
+                    } else {
+                        proc = getRuntime().exec(new String[]{"ssh", "student@" + host, command});
+                    }
+
                     String data = read(proc.getInputStream());
                     System.out.println("Command Tried1");
                     System.out.print(data + "\n");
@@ -425,6 +449,7 @@ public class Frame extends JFrame implements ActionListener {
 
             if (network.getAllComponentsCopy().stream().anyMatch(c -> nameField.getText().equals(c.getComponentName()))) {
                 setError("Component already exist with name: " + nameField.getText());
+
 //                throw new IllegalArgumentException("Component already exist with name: " + nameField.getText());
                 return;
             }
@@ -443,6 +468,7 @@ public class Frame extends JFrame implements ActionListener {
 
         //Set default open location
         File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" + System.getProperty("file.separator") + "NerdygadgetsFiles");
+
         //If the directory does not exist, make it
         saveDirectory.mkdir();
         chooser.setCurrentDirectory(saveDirectory);
@@ -470,6 +496,7 @@ public class Frame extends JFrame implements ActionListener {
     private void RegenerateNetworkDrawing() {
         String calculatedPrice = String.valueOf(network.calculatePrice());
         totalPriceLabelValue.setText(calculatedPrice);
+
         //Formatting the calculatedavailability
         DecimalFormat df = new DecimalFormat("#.######");
         df.setRoundingMode(CEILING);
@@ -504,9 +531,11 @@ public class Frame extends JFrame implements ActionListener {
     }
 
     private void saveToFile() {
+
         //Set the default save directory
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
         File saveDirectory = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Documents" + System.getProperty("file.separator") + "NerdygadgetsFiles");
+
         //If the directory does not exist, make it
         saveDirectory.mkdir();
         fileChooser.setCurrentDirectory(saveDirectory);
@@ -529,25 +558,6 @@ public class Frame extends JFrame implements ActionListener {
                 e.printStackTrace();
             }
         }
-
-        //region Save as txt
-//        int option = fileChooser.showSaveDialog(this);
-//        if (option == JFileChooser.APPROVE_OPTION) {
-//            File file = fileChooser.getSelectedFile();
-//            if (file == null) {
-//                return;
-//            }
-//            if (!file.getName().toLowerCase().endsWith(".txt")) {
-//                file = new File(file.getParentFile(), file.getName() + ".txt");
-//            }
-//            try {
-//                componentList.write(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
-//                Desktop.getDesktop().open(file);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-        //endregion
     }
 
     public void showDetails(InfrastructureComponent component) {
