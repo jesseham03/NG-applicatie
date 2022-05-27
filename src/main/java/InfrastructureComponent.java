@@ -11,9 +11,9 @@ import java.awt.*;
 public class InfrastructureComponent {
 
     private String componentName;
-    private double costInEuros;
-    private double availability;
-    private ComponentType type;
+    private double costInEuros = 0;
+    private double availability = 0;
+    private ComponentType type = ComponentType.Web;
     @Builder.Default
     private String hostname = "127.0.0.1";
 
