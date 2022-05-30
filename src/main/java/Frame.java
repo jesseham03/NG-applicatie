@@ -11,6 +11,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiConsumer;
 
 import static java.awt.BorderLayout.*;
@@ -18,6 +19,8 @@ import static java.awt.Toolkit.getDefaultToolkit;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.sleep;
 import static java.math.RoundingMode.CEILING;
+import static java.util.concurrent.Executors.newScheduledThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Frame extends JFrame implements ActionListener {
 
@@ -69,6 +72,8 @@ public class Frame extends JFrame implements ActionListener {
 
     private final JPanel netWorkDrawing;
 
+    private final ScheduledExecutorService scheduledExecutorService;
+
     private final Thread diskThread;
     private final Thread cpuThread;
     private final Thread uptimeThread;
@@ -83,7 +88,7 @@ public class Frame extends JFrame implements ActionListener {
             e.printStackTrace();
         }
 
-        Splash splash = new Splash();
+        new Splash();
 
         setIconImage(getDefaultToolkit().getImage(getClass().getResource("/Favicon2.png")));
         setTitle("NG Network-Application");
@@ -245,6 +250,9 @@ public class Frame extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
 
         setVisible(true);
+
+        scheduledExecutorService = newScheduledThreadPool(1);
+
         //TODO juiste commando's gebruiken
         diskThread = startMonitoring(monitoringDisk, "df | awk '{print $4}' | sed -n '2 p'");
         cpuThread = startMonitoring(monitoringCpu, "top -bn1 | awk '{print $4}' | sed -n '3 p'");
@@ -375,6 +383,7 @@ public class Frame extends JFrame implements ActionListener {
 
     private Thread startMonitoring(JLabel label, String command) {
 
+
         //Start a new thread, so the application doesn't freeze
         Thread thread = new Thread(() -> {
             while (true) {
@@ -401,12 +410,12 @@ public class Frame extends JFrame implements ActionListener {
                         System.err.print(data + "\n");
                     }
                     label.setText(data);
-                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-                    monitoringLastUpdate.setText(dtf.format(LocalDateTime.now()));
                     sleep(10_000);
                 } catch (InterruptedException e) {
+                    label.setText("Server unavailable");
                     System.out.println("Interrupted");
                 } catch (Exception e) {
+                    label.setText(e.getMessage());
                     e.printStackTrace();
                     try {
                         sleep(10_000);
@@ -415,11 +424,14 @@ public class Frame extends JFrame implements ActionListener {
                     }
                 } finally {
                     System.out.println("Command Tried");
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                    monitoringLastUpdate.setText(dtf.format(LocalDateTime.now()));
                     refreshButton.setText("Refresh");
                 }
             }
         });
 
+        scheduledExecutorService.scheduleAtFixedRate(thread::interrupt, 5, 5, SECONDS);
         thread.setDaemon(true);
         thread.start();
 
