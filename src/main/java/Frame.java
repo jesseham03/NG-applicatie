@@ -497,6 +497,7 @@ public class Frame extends JFrame implements ActionListener {
             network = readFromJson(new FileInputStream(file));
         } catch (IOException e) {
             e.printStackTrace();
+            setError("Cannot read json file");
         }
         RegenerateNetworkDrawing();
     }
